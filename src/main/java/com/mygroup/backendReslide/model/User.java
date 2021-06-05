@@ -1,7 +1,6 @@
 package com.mygroup.backendReslide.model;
 
 import com.mygroup.backendReslide.model.status.UserRole;
-import com.mygroup.backendReslide.model.status.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private UserStatus status;
+    private boolean enabled;
 
     @Column(nullable = false)
     private UserRole role;

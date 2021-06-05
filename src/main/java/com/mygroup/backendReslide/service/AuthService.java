@@ -12,7 +12,6 @@ import com.mygroup.backendReslide.model.IndividualType;
 import com.mygroup.backendReslide.model.User;
 import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import com.mygroup.backendReslide.model.status.UserRole;
-import com.mygroup.backendReslide.model.status.UserStatus;
 import com.mygroup.backendReslide.repository.IndividualRepository;
 import com.mygroup.backendReslide.repository.IndividualTypeRepository;
 import com.mygroup.backendReslide.repository.UserRepository;
@@ -65,7 +64,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(userRequest.getPassword())); // Encodes password.
         user.setCreated(Instant.now());
         user.setRole(UserRole.CASHIER);
-        user.setStatus(UserStatus.ACTIVE);
+        user.setEnabled(true);
         // Link individual and user.
         user.setIndividual(individual);
 

@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Wrapper given by Spring to implement the user's details interface.
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), user.getPassword(),true, true, true,true,getAuthorities("USER")
+                user.getUsername(), user.getPassword(),user.isEnabled(), true, true,true,getAuthorities("USER")
         );
     }
 

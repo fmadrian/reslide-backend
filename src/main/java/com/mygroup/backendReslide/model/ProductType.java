@@ -17,6 +17,7 @@ public class ProductType {
     private Long id;
 
     @NotBlank(message = "Type is required")
+    @Column(unique = true)
     private String type;
 
     @Column(nullable = false)

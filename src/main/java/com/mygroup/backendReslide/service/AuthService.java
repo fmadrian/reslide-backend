@@ -1,12 +1,14 @@
 package com.mygroup.backendReslide.service;
 
 import com.mygroup.backendReslide.dto.request.LoginRequest;
+import com.mygroup.backendReslide.dto.request.LogoutRequest;
 import com.mygroup.backendReslide.dto.request.RefreshTokenRequest;
 import com.mygroup.backendReslide.dto.request.UserRequest;
 import com.mygroup.backendReslide.dto.response.AuthenticationResponse;
-import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeAlreadyExists;
-import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameAlreadyExists;
+import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
+import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.model.Individual;
 import com.mygroup.backendReslide.model.IndividualType;
 import com.mygroup.backendReslide.model.User;
@@ -17,6 +19,7 @@ import com.mygroup.backendReslide.repository.IndividualTypeRepository;
 import com.mygroup.backendReslide.repository.UserRepository;
 import com.mygroup.backendReslide.security.JwtProvider;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,9 +47,9 @@ public class AuthService {
     public void createUser(UserRequest userRequest){
         // Verify that username / code doesn't exist in the database.
         if(userRepository.findByUsername(userRequest.getUsername()).isPresent()){
-            throw new UsernameAlreadyExists(userRequest.getUsername()); // Throws an exception if it already exists.
+            throw new UsernameExistsException(userRequest.getUsername()); // Throws an exception if it already exists.
         }if(individualRepository.findByCode(userRequest.getCode()).isPresent()){
-            throw new IndividualCodeAlreadyExists(userRequest.getCode()); // Throws an exception if it already exists.
+            throw new IndividualCodeExistsException(userRequest.getCode()); // Throws an exception if it already exists.
         }
 
         // Lookup for individual type.
@@ -111,5 +114,30 @@ public class AuthService {
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(refreshTokenRequest.getUsername())
                 .build();
+    }
+    @Transactional(readOnly = true)
+    public User getCurrentUser(){
+        // 1. Get the User name from the security context holder.
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User)
+                        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // 2. Search the user in the database using the retrieved name.
+        // If it doesn't find it, throws an exception.
+        User user = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(()-> new UserNotFoundException(principal.getUsername()));
+
+        return user;
+    }
+    public boolean isLoggedIn(){
+        // Get the authentication object from the security context holder
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Returns whether there is an authenticated (not anonymous) authentication token.
+        return !(authentication instanceof AnonymousAuthenticationToken) &&authentication.isAuthenticated();
+    }
+    @Transactional
+    public void logout(LogoutRequest logoutRequest){
+        // Validate and remove the authentication token from the database.
+        refreshTokenService.validateRefreshToken(logoutRequest.getRefreshToken());
+        refreshTokenService.deleteRefreshToken(logoutRequest.getRefreshToken());
     }
 }

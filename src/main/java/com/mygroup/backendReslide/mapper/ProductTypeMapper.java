@@ -7,7 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel="spring")
 public interface ProductTypeMapper  {
-    // ProductType mapToEntity(ProductTypeDto productTypeDto);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "enabled", expression = "java(true)")
+    ProductType mapToEntity(ProductTypeDto productTypeDto);
 
     ProductTypeDto mapToDto(ProductType productType);
 }

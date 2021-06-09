@@ -24,11 +24,12 @@ public class ProductTypeService {
         if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());
         }
-        // Retrieve data from the request, add it to an object and store in the database.
-        ProductType productType = new ProductType();
+        // Retrieve data from the request, and map it to an object and store in the database.
+        ProductType productType = productTypeMapper.mapToEntity(productTypeRequest);
+        /*ProductType productType = new ProductType();
         productType.setType(productTypeRequest.getType());
         productType.setNotes(productTypeRequest.getNotes());
-        productType.setEnabled(true);
+        productType.setEnabled(true);*/
         // Store in the database.
         productTypeRepository.save(productType);
     }

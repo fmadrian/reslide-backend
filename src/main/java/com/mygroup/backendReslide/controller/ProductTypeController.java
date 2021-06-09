@@ -20,11 +20,11 @@ public class ProductTypeController {
     private final ProductTypeService productTypeService;
     private final GenericResponseService responseService;
 
-    @PostMapping("/register")
-    public ResponseEntity register(@RequestBody ProductTypeDto productTypeRequest){
+    @PostMapping("/create")
+    public ResponseEntity<GenericResponse> create(@RequestBody ProductTypeDto productTypeRequest){
         try{
-            productTypeService.register(productTypeRequest);
-            return new ResponseEntity(responseService.buildInformation("Product type registered."), HttpStatus.CREATED);
+            productTypeService.create(productTypeRequest);
+            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Product type registered."), HttpStatus.CREATED);
         }catch (ProductTypeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -32,10 +32,10 @@ public class ProductTypeController {
         }
     }
     @PutMapping("/update")
-    public ResponseEntity update(@RequestBody ProductTypeDto productTypeRequest) {
+    public ResponseEntity<GenericResponse> update(@RequestBody ProductTypeDto productTypeRequest) {
         try {
             productTypeService.update(productTypeRequest);
-            return new ResponseEntity(responseService.buildInformation("Product type updated."), HttpStatus.OK);
+            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Product type updated."), HttpStatus.OK);
         } catch (ProductTypeNotFoundException | ProductTypeExistsException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -43,10 +43,10 @@ public class ProductTypeController {
         }
     }
     @PutMapping("/deactivate")
-    public ResponseEntity deactivate(@RequestBody ProductTypeDto productTypeRequest){
+    public ResponseEntity<GenericResponse> deactivate(@RequestBody ProductTypeDto productTypeRequest){
         try {
             productTypeService.deactivate(productTypeRequest);
-            return new ResponseEntity(responseService.buildInformation("Product type deactivated."), HttpStatus.OK);
+            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Product type deactivated."), HttpStatus.OK);
         } catch (ProductTypeNotFoundException | ProductTypeExistsException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         } catch (Exception e) {

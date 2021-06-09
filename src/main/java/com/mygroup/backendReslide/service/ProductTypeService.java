@@ -21,7 +21,7 @@ public class ProductTypeService {
     private final ProductTypeRepository productTypeRepository;
     private final ProductTypeMapper productTypeMapper;
 
-    public void register(ProductTypeDto productTypeRequest){
+    public void create(ProductTypeDto productTypeRequest){
         // Check whether the product type exists.
         if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());

@@ -1,21 +1,27 @@
 package com.mygroup.backendReslide.service;
 
-import com.mygroup.backendReslide.dto.request.ProductTypeRequest;
+import com.mygroup.backendReslide.dto.ProductTypeDto;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ProductTypeExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.ProductTypeNotFoundException;
+import com.mygroup.backendReslide.mapper.ProductTypeMapper;
 import com.mygroup.backendReslide.model.ProductType;
 import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import com.mygroup.backendReslide.repository.ProductTypeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class ProductTypeService {
 
     private final ProductTypeRepository productTypeRepository;
+    private final ProductTypeMapper productTypeMapper;
 
-    public void register(ProductTypeRequest productTypeRequest){
+    public void register(ProductTypeDto productTypeRequest){
         // Check whether the product type exists.
         if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());
@@ -29,10 +35,14 @@ public class ProductTypeService {
         productTypeRepository.save(productType);
     }
 
-    public void update(ProductTypeRequest productTypeRequest){
-        // Search the product type.
+    public void update(ProductTypeDto productTypeRequest){
+        // Search the product type by id.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
-                .orElseThrow(()->new ProductTypeNotFoundException(productTypeRequest.getType()));
+                .orElseThrow(()->new ProductTypeNotFoundException(productTypeRequest.getId()));
+        // Check that the new product type doesn't exist.
+        if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
+            throw new ProductTypeExistsException(productTypeRequest.getType());
+        }
         // Do the changes.
         productType.setType(productTypeRequest.getType());
         productType.setNotes(productTypeRequest.getNotes());
@@ -40,10 +50,10 @@ public class ProductTypeService {
         productTypeRepository.save(productType);
     }
 
-    public void delete(ProductTypeRequest productTypeRequest){
+    public void deactivate(ProductTypeDto productTypeRequest){
         // Search the product type.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
-                .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getType()));
+                .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Do the changes.
         productType.setStatus(DatabaseStatus.DELETED);
         // Update the database.
@@ -51,5 +61,23 @@ public class ProductTypeService {
     }
 
 
+    public List<ProductTypeDto> getAll() {
+        // Returns only active elements.
+        List<ProductType> searchList = productTypeRepository.findByStatus(DatabaseStatus.ACTIVE);
+        // Map the entity list to a DTO list.
+        return searchList.stream()
+                .map(productTypeMapper :: mapToDto)
+                .collect(Collectors.toList());
 
+    }
+
+    public List<ProductTypeDto> getByType(String type) {
+        // Returns only active elements.
+        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndStatus(type, DatabaseStatus.ACTIVE);
+        // Map the entity list to a DTO list.
+        return searchList.stream()
+                .map(productTypeMapper :: mapToDto)
+                .collect(Collectors.toList());
+
+    }
 }

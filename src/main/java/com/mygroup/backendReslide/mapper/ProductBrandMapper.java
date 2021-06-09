@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductBrandMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "enabled", expression = "java(true)")
     ProductBrand mapToEntity(ProductBrandDto productBrandDto);
 
     ProductBrandDto mapToDto(ProductBrand productBrand);

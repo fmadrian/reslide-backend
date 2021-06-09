@@ -25,8 +25,6 @@ public class ProductBrandService {
         }
         // Using the mapper instead of doing setters and getters.
         ProductBrand productBrand = productBrandMapper.mapToEntity(productBrandDto);
-        // Status cannot be mapped because the mapper implementation doesn't import the class used to represent it.
-        productBrand.setEnabled(true);
         // Store it.
         productBrandRepository.save(productBrand);
     }

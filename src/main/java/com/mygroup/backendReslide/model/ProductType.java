@@ -20,7 +20,7 @@ public class ProductType {
     private String type;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 
     @Column(nullable = false)
     private String notes;

@@ -25,7 +25,7 @@ public class Contact {
     private String value;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 
     @Column(nullable = false)
     private String notes; // Additional notes about this contact.

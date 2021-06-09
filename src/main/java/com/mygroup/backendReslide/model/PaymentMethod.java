@@ -22,5 +22,5 @@ public class PaymentMethod {
     private String notes;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 }

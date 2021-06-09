@@ -26,7 +26,7 @@ public class ProductBrandService {
         // Using the mapper instead of doing setters and getters.
         ProductBrand productBrand = productBrandMapper.mapToEntity(productBrandDto);
         // Status cannot be mapped because the mapper implementation doesn't import the class used to represent it.
-        productBrand.setStatus(true);
+        productBrand.setEnabled(true);
         // Store it.
         productBrandRepository.save(productBrand);
     }
@@ -52,12 +52,12 @@ public class ProductBrandService {
         // Deactivates it and stores the changes.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
                 .orElseThrow(()->new ProductBrandNotFoundException(productBrandDto.getId()));
-        productBrand.setStatus(false);
+        productBrand.setEnabled(false);
         productBrandRepository.save(productBrand);
     }
 
     public List<ProductBrandDto> getAll() {
-        return productBrandRepository.findByStatus(true)
+        return productBrandRepository.findByEnabled(true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class ProductBrandService {
     }
 
     public List<ProductBrandDto> getByName(String name) {
-        return productBrandRepository.findByNameContainsAndStatus(name,true)
+        return productBrandRepository.findByNameContainsAndEnabled(name,true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());

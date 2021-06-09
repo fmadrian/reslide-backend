@@ -19,8 +19,8 @@ public class MeasurementType {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "Status is required")
-    private boolean status;
+    @NotBlank(message = "Enabled is required")
+    private boolean enabled;
 
     @Column(nullable = false)
     private String notes;

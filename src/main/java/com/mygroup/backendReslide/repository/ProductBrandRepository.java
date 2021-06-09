@@ -11,7 +11,7 @@ public interface ProductBrandRepository extends JpaRepository<ProductBrand, Long
     Optional<ProductBrand> findByName(String name);
     Optional<ProductBrand> findById(Long id);
 
-    List<ProductBrand> findByNameContainsAndStatus(String name, boolean status);
-    List<ProductBrand> findByStatus(boolean status);
+    List<ProductBrand> findByNameContainsAndEnabled(String name, boolean enabled);
+    List<ProductBrand> findByEnabled(boolean enabled);
 
 }

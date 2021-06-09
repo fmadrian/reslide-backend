@@ -28,7 +28,7 @@ public class ProductTypeService {
         ProductType productType = new ProductType();
         productType.setType(productTypeRequest.getType());
         productType.setNotes(productTypeRequest.getNotes());
-        productType.setStatus(true);
+        productType.setEnabled(true);
         // Store in the database.
         productTypeRepository.save(productType);
     }
@@ -53,7 +53,7 @@ public class ProductTypeService {
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
                 .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Do the changes.
-        productType.setStatus(false);
+        productType.setEnabled(false);
         // Update the database.
         productTypeRepository.save(productType);
     }
@@ -61,7 +61,7 @@ public class ProductTypeService {
 
     public List<ProductTypeDto> getAll() {
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByStatus(true);
+        List<ProductType> searchList = productTypeRepository.findByEnabled(true);
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)
@@ -71,7 +71,7 @@ public class ProductTypeService {
 
     public List<ProductTypeDto> getByType(String type) {
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndStatus(type, true);
+        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndEnabled(type, true);
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)

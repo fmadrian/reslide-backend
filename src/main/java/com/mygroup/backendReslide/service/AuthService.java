@@ -58,7 +58,7 @@ public class AuthService {
         individual.setCode(userRequest.getCode());
         individual.setName(userRequest.getName());
         individual.setNotes(userRequest.getNotes());
-        individual.setStatus(true);
+        individual.setEnabled(true);
         individual.setType(individualType);
         // Create user with its details.
         User user = new User();

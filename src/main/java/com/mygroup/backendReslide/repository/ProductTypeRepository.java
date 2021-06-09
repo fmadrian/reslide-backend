@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface ProductTypeRepository extends JpaRepository<ProductType, Long> {
     Optional<ProductType> findByType(String type);
-    List<ProductType> findByTypeContainsAndStatus(String type, boolean status);
-    List<ProductType> findByStatus(boolean status);
+    List<ProductType> findByTypeContainsAndEnabled(String type, boolean enabled);
+    List<ProductType> findByEnabled(boolean enabled);
+    void deleteById(Long id);
 }

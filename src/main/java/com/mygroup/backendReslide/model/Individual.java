@@ -34,7 +34,7 @@ public class Individual { // Class name Entity was not convenient
     private List<Address> addresses;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 
     @Column(nullable = false)
     private String notes;

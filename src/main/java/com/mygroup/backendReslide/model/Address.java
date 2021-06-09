@@ -24,5 +24,5 @@ public class Address {
     private String value;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 }

@@ -20,7 +20,7 @@ public class IndividualType {
     private String name;
 
     @Column(nullable = false)
-    private boolean status;
+    private boolean enabled;
 
     @Column(nullable = false)
     private String notes;

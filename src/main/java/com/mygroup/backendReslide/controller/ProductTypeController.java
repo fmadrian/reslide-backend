@@ -24,31 +24,31 @@ public class ProductTypeController {
     public ResponseEntity register(@RequestBody ProductTypeDto productTypeRequest){
         try{
             productTypeService.register(productTypeRequest);
-            return new ResponseEntity(responseService.buildInformation("Product type registered."), HttpStatus.OK);
+            return new ResponseEntity(responseService.buildInformation("Product type registered."), HttpStatus.CREATED);
         }catch (ProductTypeExistsException e){
-            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity update(@RequestBody ProductTypeDto productTypeRequest) {
         try {
             productTypeService.update(productTypeRequest);
             return new ResponseEntity(responseService.buildInformation("Product type updated."), HttpStatus.OK);
         } catch (ProductTypeNotFoundException | ProductTypeExistsException e) {
-            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("/deactivate")
+    @PutMapping("/deactivate")
     public ResponseEntity deactivate(@RequestBody ProductTypeDto productTypeRequest){
         try {
             productTypeService.deactivate(productTypeRequest);
             return new ResponseEntity(responseService.buildInformation("Product type deactivated."), HttpStatus.OK);
         } catch (ProductTypeNotFoundException | ProductTypeExistsException e) {
-            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -67,10 +67,23 @@ public class ProductTypeController {
     public ResponseEntity getByType(@PathVariable String type){
         try{
             return new ResponseEntity(productTypeService.getByType(type), HttpStatus.OK);
+        }catch (ProductTypeNotFoundException e) {
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity delete(@RequestBody ProductTypeDto productTypeRequest){
+        try{
+            productTypeService.delete(productTypeRequest);
+            return new ResponseEntity(responseService.buildInformation("Product type deleted."), HttpStatus.OK);
+        } catch (ProductTypeNotFoundException e) {
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

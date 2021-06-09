@@ -80,4 +80,12 @@ public class ProductTypeService {
                 .collect(Collectors.toList());
 
     }
+
+    public void delete(ProductTypeDto productTypeRequest) {
+        // Searches for the product type and deletes it.
+        ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
+                .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
+
+        productTypeRepository.delete(productType);
+    }
 }

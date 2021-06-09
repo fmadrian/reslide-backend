@@ -5,13 +5,11 @@ import com.mygroup.backendReslide.exceptions.alreadyExists.ProductTypeExistsExce
 import com.mygroup.backendReslide.exceptions.notFound.ProductTypeNotFoundException;
 import com.mygroup.backendReslide.mapper.ProductTypeMapper;
 import com.mygroup.backendReslide.model.ProductType;
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import com.mygroup.backendReslide.repository.ProductTypeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +28,7 @@ public class ProductTypeService {
         ProductType productType = new ProductType();
         productType.setType(productTypeRequest.getType());
         productType.setNotes(productTypeRequest.getNotes());
-        productType.setStatus(DatabaseStatus.ACTIVE);
+        productType.setStatus(true);
         // Store in the database.
         productTypeRepository.save(productType);
     }
@@ -55,7 +53,7 @@ public class ProductTypeService {
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
                 .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Do the changes.
-        productType.setStatus(DatabaseStatus.DELETED);
+        productType.setStatus(false);
         // Update the database.
         productTypeRepository.save(productType);
     }
@@ -63,7 +61,7 @@ public class ProductTypeService {
 
     public List<ProductTypeDto> getAll() {
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByStatus(DatabaseStatus.ACTIVE);
+        List<ProductType> searchList = productTypeRepository.findByStatus(true);
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)
@@ -73,7 +71,7 @@ public class ProductTypeService {
 
     public List<ProductTypeDto> getByType(String type) {
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndStatus(type, DatabaseStatus.ACTIVE);
+        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndStatus(type, true);
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)

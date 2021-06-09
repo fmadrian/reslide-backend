@@ -1,7 +1,6 @@
 package com.mygroup.backendReslide.repository;
 
 import com.mygroup.backendReslide.model.ProductType;
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +11,6 @@ import java.util.Optional;
 
 public interface ProductTypeRepository extends JpaRepository<ProductType, Long> {
     Optional<ProductType> findByType(String type);
-    List<ProductType> findByTypeContainsAndStatus(String type, DatabaseStatus status);
-    List<ProductType> findByStatus(DatabaseStatus status);
+    List<ProductType> findByTypeContainsAndStatus(String type, boolean status);
+    List<ProductType> findByStatus(boolean status);
 }

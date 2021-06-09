@@ -1,6 +1,5 @@
 package com.mygroup.backendReslide.model;
 
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,7 +34,7 @@ public class Individual { // Class name Entity was not convenient
     private List<Address> addresses;
 
     @Column(nullable = false)
-    private DatabaseStatus status;
+    private boolean status;
 
     @Column(nullable = false)
     private String notes;

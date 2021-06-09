@@ -1,6 +1,5 @@
 package com.mygroup.backendReslide.model;
 
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,5 +24,5 @@ public class Address {
     private String value;
 
     @Column(nullable = false)
-    private DatabaseStatus status;
+    private boolean status;
 }

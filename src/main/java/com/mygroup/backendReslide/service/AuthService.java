@@ -12,7 +12,6 @@ import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.model.Individual;
 import com.mygroup.backendReslide.model.IndividualType;
 import com.mygroup.backendReslide.model.User;
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import com.mygroup.backendReslide.model.status.UserRole;
 import com.mygroup.backendReslide.repository.IndividualRepository;
 import com.mygroup.backendReslide.repository.IndividualTypeRepository;
@@ -59,7 +58,7 @@ public class AuthService {
         individual.setCode(userRequest.getCode());
         individual.setName(userRequest.getName());
         individual.setNotes(userRequest.getNotes());
-        individual.setStatus(DatabaseStatus.ACTIVE);
+        individual.setStatus(true);
         individual.setType(individualType);
         // Create user with its details.
         User user = new User();

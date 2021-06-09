@@ -5,7 +5,6 @@ import com.mygroup.backendReslide.exceptions.alreadyExists.ProductBrandExistsExc
 import com.mygroup.backendReslide.exceptions.notFound.ProductBrandNotFoundException;
 import com.mygroup.backendReslide.mapper.ProductBrandMapper;
 import com.mygroup.backendReslide.model.ProductBrand;
-import com.mygroup.backendReslide.model.status.DatabaseStatus;
 import com.mygroup.backendReslide.repository.ProductBrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class ProductBrandService {
         // Using the mapper instead of doing setters and getters.
         ProductBrand productBrand = productBrandMapper.mapToEntity(productBrandDto);
         // Status cannot be mapped because the mapper implementation doesn't import the class used to represent it.
-        productBrand.setStatus(DatabaseStatus.ACTIVE);
+        productBrand.setStatus(true);
         // Store it.
         productBrandRepository.save(productBrand);
     }
@@ -53,12 +52,12 @@ public class ProductBrandService {
         // Deactivates it and stores the changes.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
                 .orElseThrow(()->new ProductBrandNotFoundException(productBrandDto.getId()));
-        productBrand.setStatus(DatabaseStatus.DELETED);
+        productBrand.setStatus(false);
         productBrandRepository.save(productBrand);
     }
 
     public List<ProductBrandDto> getAll() {
-        return productBrandRepository.findByStatus(DatabaseStatus.ACTIVE)
+        return productBrandRepository.findByStatus(true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -66,7 +65,7 @@ public class ProductBrandService {
     }
 
     public List<ProductBrandDto> getByName(String name) {
-        return productBrandRepository.findByNameContainsAndStatus(name, DatabaseStatus.ACTIVE)
+        return productBrandRepository.findByNameContainsAndStatus(name,true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());

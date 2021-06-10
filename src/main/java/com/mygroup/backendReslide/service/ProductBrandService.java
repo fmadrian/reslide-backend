@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.model.ProductBrand;
 import com.mygroup.backendReslide.repository.ProductBrandRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class ProductBrandService {
     private final ProductBrandRepository productBrandRepository;
     private final ProductBrandMapper productBrandMapper;
 
+    @Transactional
     public void create(ProductBrandDto productBrandDto) {
         if(productBrandRepository.findByNameIgnoreCase(productBrandDto.getName()).isPresent()){
             throw new ProductBrandExistsException(productBrandDto.getName());
@@ -28,7 +30,7 @@ public class ProductBrandService {
         // Store it.
         productBrandRepository.save(productBrand);
     }
-
+    @Transactional
     public void update(ProductBrandDto productBrandDto) {
         // Searches the brand.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
@@ -45,7 +47,7 @@ public class ProductBrandService {
         // Stores the changes.
         productBrandRepository.save(productBrand);
     }
-
+    @Transactional
     public void deactivate(ProductBrandDto productBrandDto) {
         // Deactivates it and stores the changes.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
@@ -53,7 +55,7 @@ public class ProductBrandService {
         productBrand.setEnabled(false);
         productBrandRepository.save(productBrand);
     }
-
+    @Transactional(readOnly = true)
     public List<ProductBrandDto> getAll() {
         return productBrandRepository.findByEnabled(true)
                 .stream()
@@ -61,7 +63,7 @@ public class ProductBrandService {
                 .collect(Collectors.toList());
 
     }
-
+    @Transactional(readOnly = true)
     public List<ProductBrandDto> getByName(String name) {
         return productBrandRepository.findByNameIgnoreCaseContainsAndEnabled(name,true)
                 .stream()

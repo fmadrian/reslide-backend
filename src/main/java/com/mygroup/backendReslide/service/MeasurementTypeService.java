@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.model.MeasurementType;
 import com.mygroup.backendReslide.repository.MeasurementTypeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class MeasurementTypeService {
 
     private final MeasurementTypeRepository measurementTypeRepository;
     private final MeasurementTypeMapper measurementTypeMapper;
+    @Transactional
     public void create(MeasurementTypeDto measurementTypeRequest){
         // If it doesn't exist, store it to the database.
         if(measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName()).isPresent()){
@@ -26,6 +28,7 @@ public class MeasurementTypeService {
         MeasurementType measurementType = measurementTypeMapper.mapToEntity(measurementTypeRequest);
         measurementTypeRepository.save(measurementType);
     }
+    @Transactional
     public void update(MeasurementTypeDto measurementTypeRequest){
         MeasurementType measurementType = measurementTypeRepository.findById(measurementTypeRequest.getId())
                 .orElseThrow(()->new MeasurementTypeNotFoundException(measurementTypeRequest.getId()));
@@ -41,6 +44,7 @@ public class MeasurementTypeService {
 
         measurementTypeRepository.save(measurementType);
     }
+    @Transactional
     public void deactivate(MeasurementTypeDto measurementTypeRequest){
         MeasurementType measurementType = measurementTypeRepository.findById(measurementTypeRequest.getId())
                 .orElseThrow(()->new MeasurementTypeNotFoundException(measurementTypeRequest.getId()));
@@ -50,7 +54,7 @@ public class MeasurementTypeService {
 
         measurementTypeRepository.save(measurementType);
     }
-
+    @Transactional(readOnly = true)
     public List<MeasurementTypeDto> search() {
         // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
         // and sends it back.
@@ -59,7 +63,7 @@ public class MeasurementTypeService {
                 .map(measurementTypeMapper :: mapToDto)
                 .collect(Collectors.toList());
     }
-
+    @Transactional(readOnly = true)
     public List<MeasurementTypeDto> searchByText(String text) {
         // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
         // and sends it back.

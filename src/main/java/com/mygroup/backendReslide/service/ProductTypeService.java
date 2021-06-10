@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.model.ProductType;
 import com.mygroup.backendReslide.repository.ProductTypeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class ProductTypeService {
 
     private final ProductTypeRepository productTypeRepository;
     private final ProductTypeMapper productTypeMapper;
-
+    @Transactional
     public void create(ProductTypeDto productTypeRequest){
         // Check whether the product type exists.
         if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()){
@@ -33,7 +34,7 @@ public class ProductTypeService {
         // Store in the database.
         productTypeRepository.save(productType);
     }
-
+    @Transactional
     public void update(ProductTypeDto productTypeRequest){
         // Search the product type by id.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
@@ -48,7 +49,7 @@ public class ProductTypeService {
         // Update the database.
         productTypeRepository.save(productType);
     }
-
+    @Transactional
     public void deactivate(ProductTypeDto productTypeRequest){
         // Search the product type.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
@@ -59,7 +60,7 @@ public class ProductTypeService {
         productTypeRepository.save(productType);
     }
 
-
+    @Transactional(readOnly = true)
     public List<ProductTypeDto> getAll() {
         // Returns only active elements.
         List<ProductType> searchList = productTypeRepository.findByEnabled(true);
@@ -69,7 +70,7 @@ public class ProductTypeService {
                 .collect(Collectors.toList());
 
     }
-
+    @Transactional(readOnly = false)
     public List<ProductTypeDto> getByType(String type) {
         // Returns only active elements.
         List<ProductType> searchList = productTypeRepository.findByTypeIgnoreCaseContainsAndEnabled(type, true);
@@ -79,7 +80,7 @@ public class ProductTypeService {
                 .collect(Collectors.toList());
 
     }
-
+    @Transactional
     public void delete(ProductTypeDto productTypeRequest) {
         // Searches for the product type and deletes it.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())

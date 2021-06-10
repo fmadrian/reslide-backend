@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface ProductBrandRepository extends JpaRepository<ProductBrand, Long > {
 
-    Optional<ProductBrand> findByName(String name);
+    Optional<ProductBrand> findByNameIgnoreCase(String name);
     Optional<ProductBrand> findById(Long id);
 
-    List<ProductBrand> findByNameContainsAndEnabled(String name, boolean enabled);
+    List<ProductBrand> findByNameIgnoreCaseContainsAndEnabled(String name, boolean enabled);
     List<ProductBrand> findByEnabled(boolean enabled);
 
 }

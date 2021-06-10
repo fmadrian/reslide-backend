@@ -45,14 +45,14 @@ public class AuthService {
     @Transactional
     public void createUser(UserRequest userRequest){
         // Verify that username / code doesn't exist in the database.
-        if(userRepository.findByUsername(userRequest.getUsername()).isPresent()){
+        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()){
             throw new UsernameExistsException(userRequest.getUsername()); // Throws an exception if it already exists.
-        }if(individualRepository.findByCode(userRequest.getCode()).isPresent()){
+        }if(individualRepository.findByCodeIgnoreCase(userRequest.getCode()).isPresent()){
             throw new IndividualCodeExistsException(userRequest.getCode()); // Throws an exception if it already exists.
         }
 
         // Lookup for individual type.
-        IndividualType individualType = individualTypeRepository.findByName("PERSON").orElseThrow(()-> {throw new IndividualTypeNotFoundException("PERSON");});
+        IndividualType individualType = individualTypeRepository.findByNameIgnoreCase("PERSON").orElseThrow(()-> {throw new IndividualTypeNotFoundException("PERSON");});
         // Create individual with its details.
         Individual individual = new Individual();
         individual.setCode(userRequest.getCode());
@@ -122,7 +122,7 @@ public class AuthService {
                         SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // 2. Search the user in the database using the retrieved name.
         // If it doesn't find it, throws an exception.
-        User user = userRepository.findByUsername(principal.getUsername())
+        User user = userRepository.findByUsernameIgnoreCase(principal.getUsername())
                 .orElseThrow(()-> new UserNotFoundException(principal.getUsername()));
 
         return user;

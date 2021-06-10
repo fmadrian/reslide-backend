@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface MeasurementTypeRepository extends JpaRepository<MeasurementType, Long> {
-    Optional<MeasurementType> findByName(String name);
+    Optional<MeasurementType> findByNameIgnoreCase(String name);
 
     List<MeasurementType> findByEnabled(boolean enabled);
 

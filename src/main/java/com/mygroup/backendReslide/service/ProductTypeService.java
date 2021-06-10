@@ -21,7 +21,7 @@ public class ProductTypeService {
 
     public void create(ProductTypeDto productTypeRequest){
         // Check whether the product type exists.
-        if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
+        if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());
         }
         // Retrieve data from the request, and map it to an object and store in the database.
@@ -39,7 +39,7 @@ public class ProductTypeService {
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
                 .orElseThrow(()->new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Check that the new product type doesn't exist.
-        if (productTypeRepository.findByType(productTypeRequest.getType()).isPresent()){
+        if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());
         }
         // Do the changes.
@@ -72,7 +72,7 @@ public class ProductTypeService {
 
     public List<ProductTypeDto> getByType(String type) {
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByTypeContainsAndEnabled(type, true);
+        List<ProductType> searchList = productTypeRepository.findByTypeIgnoreCaseContainsAndEnabled(type, true);
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)

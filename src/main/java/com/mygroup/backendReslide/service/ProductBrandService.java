@@ -20,7 +20,7 @@ public class ProductBrandService {
     private final ProductBrandMapper productBrandMapper;
 
     public void create(ProductBrandDto productBrandDto) {
-        if(productBrandRepository.findByName(productBrandDto.getName()).isPresent()){
+        if(productBrandRepository.findByNameIgnoreCase(productBrandDto.getName()).isPresent()){
             throw new ProductBrandExistsException(productBrandDto.getName());
         }
         // Using the mapper instead of doing setters and getters.
@@ -36,7 +36,7 @@ public class ProductBrandService {
         // Check if the brand exists.
         // If the old name is different than the new one and it's taken throws an error.
         if(!productBrandDto.getName().equals(productBrand.getName()) &&
-                productBrandRepository.findByName(productBrandDto.getName()).isPresent()){
+                productBrandRepository.findByNameIgnoreCase(productBrandDto.getName()).isPresent()){
             throw new ProductBrandExistsException(productBrandDto.getName());
         }
         // Updates the brand information.
@@ -63,7 +63,7 @@ public class ProductBrandService {
     }
 
     public List<ProductBrandDto> getByName(String name) {
-        return productBrandRepository.findByNameContainsAndEnabled(name,true)
+        return productBrandRepository.findByNameIgnoreCaseContainsAndEnabled(name,true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());

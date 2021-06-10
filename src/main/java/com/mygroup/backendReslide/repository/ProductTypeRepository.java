@@ -10,8 +10,8 @@ import java.util.Optional;
 @Repository
 
 public interface ProductTypeRepository extends JpaRepository<ProductType, Long> {
-    Optional<ProductType> findByType(String type);
-    List<ProductType> findByTypeContainsAndEnabled(String type, boolean enabled);
+    Optional<ProductType> findByTypeIgnoreCase(String type);
+    List<ProductType> findByTypeIgnoreCaseContainsAndEnabled(String type, boolean enabled);
     List<ProductType> findByEnabled(boolean enabled);
     void deleteById(Long id);
 }

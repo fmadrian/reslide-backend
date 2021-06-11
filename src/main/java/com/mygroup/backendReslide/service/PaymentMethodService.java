@@ -39,6 +39,7 @@ public class PaymentMethodService {
 
 
     public List<PaymentMethodDto> search(String name) {
+        // If name is null, returns every active method.
         if(name == null){
             return paymentMethodRepository.findByEnabled(true)
                     .stream()

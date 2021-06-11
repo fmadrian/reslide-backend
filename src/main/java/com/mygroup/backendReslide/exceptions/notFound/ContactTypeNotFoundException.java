@@ -1,10 +1,10 @@
 package com.mygroup.backendReslide.exceptions.notFound;
 
-public class ContactNotFoundException extends RuntimeException {
-    public ContactNotFoundException(String type) {
+public class ContactTypeNotFoundException extends RuntimeException {
+    public ContactTypeNotFoundException(String type) {
         super("Contact type " + type + " not found");
     }
-    public ContactNotFoundException(Long id) {
+    public ContactTypeNotFoundException(Long id) {
         super("Contact type " + id.toString() + " not found");
     }
 }

@@ -4,8 +4,7 @@ import com.mygroup.backendReslide.dto.ContactTypeDto;
 import com.mygroup.backendReslide.dto.response.GenericResponse;
 import com.mygroup.backendReslide.exceptions.InternalError;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ContactTypeExistsException;
-import com.mygroup.backendReslide.exceptions.alreadyExists.MeasurementTypeExistsException;
-import com.mygroup.backendReslide.exceptions.notFound.MeasurementTypeNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.ContactTypeNotFoundException;
 import com.mygroup.backendReslide.service.ContactTypeService;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import lombok.AllArgsConstructor;
@@ -37,9 +36,9 @@ public class ContactTypeController {
     @PutMapping("/update")
     public ResponseEntity<GenericResponse> update(@RequestBody ContactTypeDto contactTypeRequest){
         try{
-            contactTypeService.create(contactTypeRequest);
+            contactTypeService.update(contactTypeRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Updated."), HttpStatus.OK);
-        }catch (ContactTypeExistsException e){
+        }catch (ContactTypeExistsException | ContactTypeNotFoundException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
@@ -50,18 +49,14 @@ public class ContactTypeController {
     public ResponseEntity getAll(){
         try{
             return new ResponseEntity<List<ContactTypeDto>>(contactTypeService.getAll(), HttpStatus.OK);
-        }catch (ContactTypeExistsException e){
-            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity search(@RequestParam String type){
+    public ResponseEntity search(@RequestParam(required = false) String type){
         try{
             return new ResponseEntity<List<ContactTypeDto>>(contactTypeService.search(type), HttpStatus.OK);
-        }catch (ContactTypeExistsException e){
-            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);

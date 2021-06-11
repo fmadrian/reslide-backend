@@ -5,10 +5,11 @@ import com.mygroup.backendReslide.model.ProductBrand;
 import com.mygroup.backendReslide.model.ProductType;
 import com.mygroup.backendReslide.model.status.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByCodeIgnoreCase(String code);
 

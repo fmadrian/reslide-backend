@@ -45,18 +45,19 @@ public class ContactTypeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContactTypeDto> getAll() {
-        return contactTypeRepository.findByEnabled(true)
-                .stream()
-                .map(contactTypeMapper :: mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public List<ContactTypeDto> search(String type) {
-        return contactTypeRepository.findByTypeContainsIgnoreCaseAndEnabled(type, true)
-                .stream()
-                .map(contactTypeMapper :: mapToDto) // .map((contactType) -> contactTypeMapper.mapToDto(contactType))
-                .collect(Collectors.toList());
+        // If name is null, returns every active method.
+        if(type == null){
+            return contactTypeRepository.findByEnabled(true)
+                    .stream()
+                    .map(contactTypeMapper :: mapToDto)
+                    .collect(Collectors.toList());
+        }
+        else {
+            return contactTypeRepository.findByTypeContainsIgnoreCaseAndEnabled(type, true)
+                    .stream()
+                    .map(contactTypeMapper::mapToDto) // .map((contactType) -> contactTypeMapper.mapToDto(contactType))
+                    .collect(Collectors.toList());
+        }
     }
 }

@@ -60,20 +60,15 @@ public class ProductTypeService {
         productTypeRepository.save(productType);
     }
 
-    @Transactional(readOnly = true)
-    public List<ProductTypeDto> getAll() {
-        // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByEnabled(true);
-        // Map the entity list to a DTO list.
-        return searchList.stream()
-                .map(productTypeMapper :: mapToDto)
-                .collect(Collectors.toList());
-
-    }
     @Transactional(readOnly = false)
-    public List<ProductTypeDto> getByType(String type) {
+    public List<ProductTypeDto> search(String type) {
+        List<ProductType> searchList;
         // Returns only active elements.
-        List<ProductType> searchList = productTypeRepository.findByTypeIgnoreCaseContainsAndEnabled(type, true);
+        if(type != null){
+            searchList = productTypeRepository.findByTypeIgnoreCaseContainsAndEnabled(type, true);
+        }else{
+            searchList = productTypeRepository.findByEnabled(true);
+        }
         // Map the entity list to a DTO list.
         return searchList.stream()
                 .map(productTypeMapper :: mapToDto)

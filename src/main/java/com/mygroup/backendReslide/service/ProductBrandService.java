@@ -51,21 +51,19 @@ public class ProductBrandService {
     public void deactivate(ProductBrandDto productBrandDto) {
         // Deactivates it and stores the changes.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
-                .orElseThrow(()->new ProductBrandNotFoundException(productBrandDto.getId()));
+                .orElseThrow(() -> new ProductBrandNotFoundException(productBrandDto.getId()));
         productBrand.setEnabled(false);
         productBrandRepository.save(productBrand);
     }
     @Transactional(readOnly = true)
-    public List<ProductBrandDto> getAll() {
+    public List<ProductBrandDto> search(String name) {
+        if(name != null){
+            return productBrandRepository.findByNameIgnoreCaseContainsAndEnabled(name,true)
+                    .stream()
+                    .map(productBrandMapper::mapToDto)
+                    .collect(Collectors.toList());
+        }
         return productBrandRepository.findByEnabled(true)
-                .stream()
-                .map(productBrandMapper::mapToDto)
-                .collect(Collectors.toList());
-
-    }
-    @Transactional(readOnly = true)
-    public List<ProductBrandDto> getByName(String name) {
-        return productBrandRepository.findByNameIgnoreCaseContainsAndEnabled(name,true)
                 .stream()
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());

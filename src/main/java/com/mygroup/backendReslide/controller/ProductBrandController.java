@@ -55,19 +55,11 @@ public class ProductBrandController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/search")
-    public ResponseEntity getAll(){
-        try{
-            return new ResponseEntity(productBrandService.getAll(), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
-    @GetMapping("/search/{name}")
-    public ResponseEntity getByName(@PathVariable String name){
+    @GetMapping("/search")
+    public ResponseEntity getByName(@RequestParam(required = false) String name){
         try{
-            return new ResponseEntity(productBrandService.getByName(name), HttpStatus.OK);
+            return new ResponseEntity(productBrandService.search(name), HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }

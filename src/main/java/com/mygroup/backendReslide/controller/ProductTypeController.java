@@ -53,20 +53,11 @@ public class ProductTypeController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    // Searches for every active product type.
+    // Searches every active product type.
     @GetMapping("/search")
-    public ResponseEntity getAll(){
-        try{
-            return new ResponseEntity(productTypeService.getAll(), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    // Searches using a part of the type as parameter
-    @GetMapping("/search/{type}")
     public ResponseEntity getByType(@PathVariable String type){
         try{
-            return new ResponseEntity(productTypeService.getByType(type), HttpStatus.OK);
+            return new ResponseEntity(productTypeService.search(type), HttpStatus.OK);
         }catch (ProductTypeNotFoundException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
         }catch (Exception e){

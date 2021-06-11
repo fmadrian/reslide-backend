@@ -46,14 +46,6 @@ public class ContactTypeController {
         }
     }
     @GetMapping("/search")
-    public ResponseEntity getAll(){
-        try{
-            return new ResponseEntity<List<ContactTypeDto>>(contactTypeService.getAll(), HttpStatus.OK);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     public ResponseEntity search(@RequestParam(required = false) String type){
         try{
             return new ResponseEntity<List<ContactTypeDto>>(contactTypeService.search(type), HttpStatus.OK);

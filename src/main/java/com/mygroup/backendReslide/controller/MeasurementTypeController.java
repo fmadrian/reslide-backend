@@ -59,18 +59,9 @@ public class MeasurementTypeController {
         }
     }
     @GetMapping("/search")
-    public ResponseEntity searchAll(){
+    public ResponseEntity search(@RequestParam(required = false) String text){
         try {
-            return new ResponseEntity<List<MeasurementTypeDto>>(measurementTypeService.search(), HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/search/{text}")
-    public ResponseEntity searchByText(@PathVariable String text){
-        try {
-            return new ResponseEntity<List<MeasurementTypeDto>>(measurementTypeService.searchByText(text), HttpStatus.OK);
+            return new ResponseEntity<List<MeasurementTypeDto>>(measurementTypeService.search(text), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -55,21 +55,22 @@ public class MeasurementTypeService {
         measurementTypeRepository.save(measurementType);
     }
     @Transactional(readOnly = true)
-    public List<MeasurementTypeDto> search() {
-        // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
-        // and sends it back.
-        return measurementTypeRepository.findByEnabled(true)
-                .stream()
-                .map(measurementTypeMapper :: mapToDto)
-                .collect(Collectors.toList());
-    }
-    @Transactional(readOnly = true)
-    public List<MeasurementTypeDto> searchByText(String text) {
-        // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
-        // and sends it back.
-        return measurementTypeRepository.findByNameIgnoreCaseContainsOrNotesIgnoreCaseContainsAndEnabled(text, text, true)
-                .stream()
-                .map(measurementTypeMapper :: mapToDto)
-                .collect(Collectors.toList());
+    public List<MeasurementTypeDto> search(String text) {
+
+        if(text == null){
+            // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
+            // and sends it back.
+            return measurementTypeRepository.findByEnabled(true)
+                    .stream()
+                    .map(measurementTypeMapper :: mapToDto)
+                    .collect(Collectors.toList());
+        }else {
+            // Gets a list of the model (entity) type, maps every element to DTO adds it to a new list
+            // and sends it back.
+            return measurementTypeRepository.findByNameIgnoreCaseContainsOrNotesIgnoreCaseContainsAndEnabled(text, text, true)
+                    .stream()
+                    .map(measurementTypeMapper::mapToDto)
+                    .collect(Collectors.toList());
+        }
     }
 }

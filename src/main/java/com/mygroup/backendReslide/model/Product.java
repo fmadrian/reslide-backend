@@ -37,10 +37,8 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private MeasurementType measurementType;
 
-    @NotBlank(message = "Quantity can't be empty.")
     private BigDecimal quantityAvailable;
 
-    @NotBlank(message = "Price can't be empty.")
     private BigDecimal price;
 
     @Column(nullable = false)

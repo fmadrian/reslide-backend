@@ -9,5 +9,4 @@ public class BackendReslideApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendReslideApplication.class, args);
 	}
-
 }

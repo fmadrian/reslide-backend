@@ -9,8 +9,8 @@ import java.util.Optional;
 @Repository
 public interface ContactTypeRepository extends JpaRepository<ContactType, Long> {
     Optional<ContactType> findByTypeIgnoreCase(String type);
-    List<ContactType> findByTypeContainsIgnoreCaseAndStatus(String type, boolean status);
+    List<ContactType> findByTypeContainsIgnoreCaseAndEnabled(String type, boolean enabled);
 
 
-    List<ContactType> findByStatus(boolean status);
+    List<ContactType> findByEnabled(boolean enabled);
 }

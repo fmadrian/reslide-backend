@@ -2,7 +2,7 @@ package com.mygroup.backendReslide.service;
 
 import com.mygroup.backendReslide.dto.ContactTypeDto;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ContactTypeExistsException;
-import com.mygroup.backendReslide.exceptions.notFound.ContactNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.ContactTypeNotFoundException;
 import com.mygroup.backendReslide.mapper.ContactTypeMapper;
 import com.mygroup.backendReslide.model.ContactType;
 import com.mygroup.backendReslide.repository.ContactTypeRepository;
@@ -31,9 +31,10 @@ public class ContactTypeService {
     @Transactional
     public void update(ContactTypeDto contactTypeRequest){
         ContactType contactType = contactTypeRepository.findById(contactTypeRequest.getId())
-                                    .orElseThrow(()-> new ContactNotFoundException(contactTypeRequest.getId()));
+                                    .orElseThrow(()-> new ContactTypeNotFoundException(contactTypeRequest.getId()));
 
-        if(contactTypeRepository.findByTypeIgnoreCase(contactTypeRequest.getType()).isPresent()){
+        if(contactTypeRepository.findByTypeIgnoreCase(contactTypeRequest.getType()).isPresent()
+        && !contactTypeRequest.getType().equals(contactTypeRequest.getType())){
             throw new ContactTypeExistsException(contactTypeRequest.getType());
         }
 
@@ -45,7 +46,7 @@ public class ContactTypeService {
 
     @Transactional(readOnly = true)
     public List<ContactTypeDto> getAll() {
-        return contactTypeRepository.findByStatus(true)
+        return contactTypeRepository.findByEnabled(true)
                 .stream()
                 .map(contactTypeMapper :: mapToDto)
                 .collect(Collectors.toList());
@@ -53,7 +54,7 @@ public class ContactTypeService {
 
     @Transactional(readOnly = true)
     public List<ContactTypeDto> search(String type) {
-        return contactTypeRepository.findByTypeContainsIgnoreCaseAndStatus(type, true)
+        return contactTypeRepository.findByTypeContainsIgnoreCaseAndEnabled(type, true)
                 .stream()
                 .map(contactTypeMapper :: mapToDto) // .map((contactType) -> contactTypeMapper.mapToDto(contactType))
                 .collect(Collectors.toList());

@@ -2,6 +2,7 @@ package com.mygroup.backendReslide.service;
 
 import com.mygroup.backendReslide.dto.IndividualDto;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
+import com.mygroup.backendReslide.exceptions.notFound.IndividualNotFoundException;
 import com.mygroup.backendReslide.mapper.IndividualMapper;
 import com.mygroup.backendReslide.model.Address;
 import com.mygroup.backendReslide.model.Contact;
@@ -44,6 +45,10 @@ public class IndividualService {
     }
 
     public void update(IndividualDto individualDto) {
+        // Check whether the individual exists or not.
+        individualRepository.findById(individualDto.getId())
+                .orElseThrow(()->new IndividualNotFoundException(individualDto.getId()));
+        // If it exists, modify it.
         Individual individual = individualMapper.mapToEntity(individualDto);
         // Check whether the code has been used (by other individual).
         if(individualRepository.findByCodeIgnoreCase(individualDto.getCode()).isPresent()

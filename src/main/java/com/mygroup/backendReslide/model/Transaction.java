@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Transaction {
     private User user; // User who registered the transaction.
 
     @NotBlank(message = "Date can't be empty.")
-    private Date date;
+    private Instant date;
 
     @Column(nullable = false)
     private String notes;

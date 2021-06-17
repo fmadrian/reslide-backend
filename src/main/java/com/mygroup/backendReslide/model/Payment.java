@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 
 @Data
@@ -25,7 +26,7 @@ public class Payment {
     private User user; // User who registers the payment.
 
     @NotBlank(message = "Date can't be empty.")
-    private Date date;
+    private Instant date;
 
     @OneToOne
     @JoinColumn(name = "paymentMethodId", referencedColumnName = "id")

@@ -52,4 +52,16 @@ public class PaymentMethodService {
                     .collect(Collectors.toList());
         }
     }
+
+    public PaymentMethodDto getPaymentMethod(String name){
+        return paymentMethodMapper.mapToDto(
+                paymentMethodRepository.findByNameIgnoreCase(name)
+                .orElseThrow(()->new PaymentMethodNotFoundException(name))
+        );
+    }
+
+    public PaymentMethod getPaymentMethod_Entity(String name) {
+        return paymentMethodRepository.findByNameIgnoreCase(name)
+                .orElseThrow(()->new PaymentMethodNotFoundException(name));
+    }
 }

@@ -84,4 +84,9 @@ public class IndividualService {
                     .collect(Collectors.toList());
         }
     }
+
+    public Individual getIndividual_Entity(String code) {
+        return individualRepository.findByCodeIgnoreCase(code)
+                .orElseThrow(()-> new IndividualNotFoundException(code));
+    }
 }

@@ -164,4 +164,15 @@ public class ProductService {
                 .map(productMapper :: mapToDto)
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public ProductDto getProduct(String code){
+        return productMapper.mapToDto(productRepository.findByCodeIgnoreCase(code)
+                .orElseThrow(()-> new ProductNotFoundException(code)));
+    }
+
+    @Transactional(readOnly = true)
+    public Product getProduct_Entity(String code){
+        return productRepository.findByCodeIgnoreCase(code)
+                .orElseThrow(()-> new ProductNotFoundException(code));
+    }
 }

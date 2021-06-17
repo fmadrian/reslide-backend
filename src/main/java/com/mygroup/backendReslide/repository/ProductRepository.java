@@ -12,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByCodeIgnoreCase(String code);
+    // Searches an active product.
+    Optional<Product> findByCodeIgnoreCaseAndProductStatus(String productCode, ProductStatus productStatus);
 
     // Every find method result is order by the code in a descending form.
 

@@ -1,5 +1,6 @@
 package com.mygroup.backendReslide.dto;
 
+import com.mygroup.backendReslide.dto.DiscountDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

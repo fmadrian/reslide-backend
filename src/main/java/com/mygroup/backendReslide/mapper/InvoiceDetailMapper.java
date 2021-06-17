@@ -2,12 +2,10 @@ package com.mygroup.backendReslide.mapper;
 
 import com.mygroup.backendReslide.dto.DiscountDto;
 import com.mygroup.backendReslide.dto.InvoiceDetailDto;
-import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
 import com.mygroup.backendReslide.model.Discount;
 import com.mygroup.backendReslide.model.InvoiceDetail;
 import com.mygroup.backendReslide.model.Product;
 import com.mygroup.backendReslide.model.status.InvoiceDetailStatus;
-import com.mygroup.backendReslide.repository.ProductRepository;
 import com.mygroup.backendReslide.service.ProductService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

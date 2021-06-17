@@ -1,15 +1,13 @@
 package com.mygroup.backendReslide.mapper;
 
-import com.mygroup.backendReslide.dto.InvoiceDetailDto;
 import com.mygroup.backendReslide.dto.InvoiceDto;
 import com.mygroup.backendReslide.dto.TransactionDto;
-import com.mygroup.backendReslide.exceptions.notFound.IndividualNotFoundException;
+import com.mygroup.backendReslide.dto.InvoiceDetailDto;
 import com.mygroup.backendReslide.model.Individual;
 import com.mygroup.backendReslide.model.Invoice;
 import com.mygroup.backendReslide.model.InvoiceDetail;
 import com.mygroup.backendReslide.model.Transaction;
 import com.mygroup.backendReslide.model.status.InvoiceStatus;
-import com.mygroup.backendReslide.repository.IndividualRepository;
 import com.mygroup.backendReslide.service.IndividualService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

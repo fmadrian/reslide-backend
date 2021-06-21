@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GenericResponse {
     private ResponseType responseType; // Error, information.
-    private String errorType = null; // Error type.
+    private String errorType; // Error type.
     private String message; // Response message.
 }

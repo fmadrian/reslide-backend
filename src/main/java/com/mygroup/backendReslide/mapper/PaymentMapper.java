@@ -26,8 +26,10 @@ public abstract class PaymentMapper {
     public abstract PaymentDto mapToDto(Payment payment);
 
     // Services can't be used by the Impl class
+    // User service function can't be used by the Impl class
     User getUser(String username){
         return userService.getUser_Entity(username);
     }
     PaymentMethod getPaymentMethod(String name){return paymentMethodService.getPaymentMethod_Entity(name);}
+
 }

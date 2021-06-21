@@ -25,20 +25,16 @@ public class Payment {
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user; // User who registers the payment.
 
-    @NotBlank(message = "Date can't be empty.")
     private Instant date;
 
     @OneToOne
     @JoinColumn(name = "paymentMethodId", referencedColumnName = "id")
     private PaymentMethod paymentMethod;
 
-    @NotBlank(message = "Paid amount can't be empty.")
     private BigDecimal paid;
 
-    @NotBlank(message = "Owed before amount can't be empty.")
     private BigDecimal owedBefore; // Amount owed before the payment.
 
-    @NotBlank(message = "Owed after amount can't be empty.")
     private BigDecimal owedAfter; // Amount owed after the payment.
 
     @Column(nullable = false)

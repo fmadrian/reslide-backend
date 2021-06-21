@@ -27,22 +27,16 @@ public class Invoice {
     @JoinColumn(name = "clientId", referencedColumnName = "id")
     private Individual client;
 
-    @NotBlank(message = "Subtotal can't be empty.")
     private BigDecimal subtotal;
 
-    @NotBlank(message = "Tax can't be empty.")
     private BigDecimal tax;
 
-    @NotBlank(message = "Discount can't be empty.")
     private BigDecimal discount;
 
-    @NotBlank(message = "Total can't be empty.")
     private BigDecimal total;
 
-    @NotBlank(message = "Paid can't be empty.")
     private BigDecimal paid;
 
-    @NotBlank(message = "Owed can't be empty.")
     private BigDecimal owed;
 
     @Column(nullable = false)

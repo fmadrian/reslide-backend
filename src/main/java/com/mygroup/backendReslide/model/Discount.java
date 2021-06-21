@@ -16,7 +16,6 @@ public class Discount {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NotBlank(message = "A percentage is required.")
     private Integer percentage; // Between 1 and 100.
 
     @NotBlank(message = "A reason is required.")

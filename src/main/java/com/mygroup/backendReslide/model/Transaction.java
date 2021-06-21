@@ -23,7 +23,6 @@ public class Transaction {
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user; // User who registered the transaction.
 
-    @NotBlank(message = "Date can't be empty.")
     private Instant date;
 
     @Column(nullable = false)

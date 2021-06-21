@@ -1,20 +1,10 @@
 package com.mygroup.backendReslide.service;
 
-import com.mygroup.backendReslide.dto.InvoiceDetailDto;
-import com.mygroup.backendReslide.dto.InvoiceDto;
-import com.mygroup.backendReslide.dto.PaymentDto;
-import com.mygroup.backendReslide.exceptions.DiscountNotValidException;
-import com.mygroup.backendReslide.exceptions.PaymentExceedsDebtException;
-import com.mygroup.backendReslide.exceptions.PaymentQuantityException;
-import com.mygroup.backendReslide.exceptions.ProductQuantityException;
+import com.mygroup.backendReslide.dto.request.InvoiceRequest;
+import com.mygroup.backendReslide.dto.response.InvoiceResponse;
 import com.mygroup.backendReslide.exceptions.notFound.InvoiceNotFoundException;
-import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
-import com.mygroup.backendReslide.mapper.InvoiceDetailMapper;
 import com.mygroup.backendReslide.mapper.InvoiceMapper;
 import com.mygroup.backendReslide.model.*;
-import com.mygroup.backendReslide.model.status.InvoiceDetailStatus;
-import com.mygroup.backendReslide.model.status.PaymentStatus;
-import com.mygroup.backendReslide.model.status.ProductStatus;
 import com.mygroup.backendReslide.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +28,7 @@ public class InvoiceService {
     private final BigDecimal TAX = new BigDecimal(0.13);
 
     @Transactional
-    public void create(InvoiceDto invoiceDto) {
+    public void create(InvoiceRequest invoiceDto) {
 
         // Maps the invoice dto to entity.
         Invoice invoice = invoiceMapper.mapToEntity(invoiceDto);
@@ -102,7 +91,7 @@ public class InvoiceService {
 
     // Returns an specific invoice with its details.
     @Transactional(readOnly = true)
-    public InvoiceDto get(Long id) {
+    public InvoiceResponse get(Long id) {
         return invoiceMapper.mapToDto(
                 invoiceRepository.findById(id).orElseThrow(()-> new InvoiceNotFoundException(id))
         );
@@ -110,7 +99,7 @@ public class InvoiceService {
     // Search invoice(s) functions.
     // We are hiding the invoice details to only show them when we return an specific invoice.
     @Transactional(readOnly = true)
-    public List<InvoiceDto> search(String start, String end) {
+    public List<InvoiceResponse> search(String start, String end) {
         return invoiceRepository.findByDate(Instant.parse(start), Instant.parse(end))
                 .stream()
                 .map(invoiceMapper :: mapToDto)
@@ -118,7 +107,7 @@ public class InvoiceService {
                 .collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
-    public List<InvoiceDto> searchByClient(String start, String end, String clientCode) {
+    public List<InvoiceResponse> searchByClient(String start, String end, String clientCode) {
         return invoiceRepository.findByDateAndClientCode(Instant.parse(start), Instant.parse(end),clientCode)
                 .stream()
                 .map(invoiceMapper :: mapToDto)
@@ -126,8 +115,43 @@ public class InvoiceService {
                 .collect(Collectors.toList());
     }
 
-    private InvoiceDto hideInvoiceDetails(InvoiceDto invoiceDto){
-        invoiceDto.setDetails(null);
-        return invoiceDto;
+    @Transactional
+    public void recalculateInvoice(Invoice invoice) {
+
+        List<InvoiceDetail> invoiceDetails = invoice.getDetails();
+        List<Payment> payments = invoice.getTransaction().getPayments();
+
+        // Adds every subtotal added to each invoice detail.
+        BigDecimal subtotal = invoiceDetails.stream()
+                .map(invoiceDetail -> invoiceDetail.getSubtotal()) // .map(invoiceDetail -> {return invoiceDetail.getSubtotal();})
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Adds every tax added to each invoice detail.
+        BigDecimal tax = invoiceDetails.stream()
+                .map(invoiceDetail -> invoiceDetail.getTax())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Adds every discount added to each invoice detail.
+        BigDecimal discount = invoiceDetails.stream()
+                .map(invoiceDetail -> invoiceDetail.getDiscount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Adds every total added to each invoice detail.
+        BigDecimal total = invoiceDetails.stream()
+                .map(invoiceDetail -> invoiceDetail.getTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Adds every payment made to the invoice.
+        BigDecimal paid = payments.stream()
+                .map(payment -> payment.getPaid())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Adds the values to the invoice.
+        invoice.setSubtotal(subtotal);
+        invoice.setDiscount(discount);
+        invoice.setTax(tax);
+        invoice.setTotal(total);
+        invoice.setPaid(paid);
+        invoice.setOwed(total.subtract(paid)); // total - paid
+        invoiceRepository.save(invoice);
+    }
+    private InvoiceResponse hideInvoiceDetails(InvoiceResponse invoiceResponse){
+        invoiceResponse.setDetails(null);
+        return invoiceResponse;
     }
 }

@@ -1,8 +1,8 @@
 package com.mygroup.backendReslide.model.status;
 
 public enum PaymentStatus {
-    PAID("paid"),
-    NOT_PAID("not_paid"),
+    ACTIVE("active"),
+    DELETED("deleted"),
     OVERTURNED("overturned");
     PaymentStatus(String status){
         this.status = status;

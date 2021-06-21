@@ -28,6 +28,7 @@ public abstract class InvoiceDetailMapper {
     public abstract InvoiceDetail mapToEntity(InvoiceDetailDto invoiceDetailDto);
 
     @Mapping(target = "productCode", expression = "java(invoiceDetail.getProduct().getCode())")
+    @Mapping(target = "productName", expression = "java(invoiceDetail.getProduct().getName())")
     @Mapping(target = "discountApplied", expression = "java(mapDiscountToDto(invoiceDetail.getDiscountApplied()))")
     @Mapping(target = "status", expression = "java(invoiceDetail.getStatus().getStatus())")
     public abstract InvoiceDetailDto mapToDto(InvoiceDetail invoiceDetail);

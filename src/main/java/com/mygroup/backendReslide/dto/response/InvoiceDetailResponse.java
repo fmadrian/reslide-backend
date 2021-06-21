@@ -20,7 +20,7 @@ public class InvoiceDetailResponse {
     private BigDecimal tax;
     private BigDecimal discount;
     private BigDecimal total;
-    private Boolean taxExempt; // Product exempt from taxes at the moment of the transaction.
+    private BigDecimal taxPercentage; // Product exempt from taxes at the moment of the transaction will have 0.
 
     private DiscountDto discountApplied;
 

@@ -38,4 +38,6 @@ public class InvoiceDetail {
 
     @Column(nullable = false)
     private String notes;
+
+    private BigDecimal taxPercentage; // Product exempt from taxes at the time of the transaction will have 0.
 }

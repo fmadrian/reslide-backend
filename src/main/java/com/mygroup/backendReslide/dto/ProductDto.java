@@ -20,4 +20,5 @@ public class ProductDto {
     private BigDecimal price;
     private String notes;
     private String productStatus; // Product status.
+    private Boolean taxExempt; // Product exempt from taxes.
 }

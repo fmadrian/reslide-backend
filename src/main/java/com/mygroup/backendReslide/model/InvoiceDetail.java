@@ -22,19 +22,11 @@ public class InvoiceDetail {
     @JoinColumn(name = "productId", referencedColumnName = "id")
     private Product product;
 
-    @NotBlank(message = "Quantity can't be empty.")
+    private BigDecimal priceByUnit; // Price of the item at the time of the purchase
     private BigDecimal quantity;
-
-    @NotBlank(message = "Subtotal can't be empty.")
     private BigDecimal subtotal;
-
-    @NotBlank(message = "Tax can't be empty.")
     private BigDecimal tax;
-
-    @NotBlank(message = "Discount can't be empty.")
     private BigDecimal discount;
-
-    @NotBlank(message = "Total can't be empty.")
     private BigDecimal total;
 
     @ManyToOne(fetch = FetchType.LAZY)

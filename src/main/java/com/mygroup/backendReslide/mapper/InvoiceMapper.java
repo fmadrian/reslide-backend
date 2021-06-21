@@ -1,8 +1,10 @@
 package com.mygroup.backendReslide.mapper;
 
-import com.mygroup.backendReslide.dto.InvoiceDto;
 import com.mygroup.backendReslide.dto.TransactionDto;
-import com.mygroup.backendReslide.dto.InvoiceDetailDto;
+import com.mygroup.backendReslide.dto.request.InvoiceDetailRequest;
+import com.mygroup.backendReslide.dto.request.InvoiceRequest;
+import com.mygroup.backendReslide.dto.response.InvoiceDetailResponse;
+import com.mygroup.backendReslide.dto.response.InvoiceResponse;
 import com.mygroup.backendReslide.model.Individual;
 import com.mygroup.backendReslide.model.Invoice;
 import com.mygroup.backendReslide.model.InvoiceDetail;
@@ -30,28 +32,34 @@ public abstract class InvoiceMapper {
     @Mapping(target = "client", expression = "java(getClient(invoiceDto.getClientCode()))")
     @Mapping(target = "status", expression = "java(getInvoiceStatus(invoiceDto.getStatus()))")
     @Mapping(target = "details", expression = "java(mapDetailsToEntity(invoiceDto.getDetails()))")
-    @Mapping(target = "transaction", expression = "java(mapTransactionToEntity(invoiceDto.getTransaction()))") // TODO: MAP transaction DTO -> entity
-    public abstract Invoice mapToEntity(InvoiceDto invoiceDto);
+    @Mapping(target = "transaction", expression = "java(mapTransactionToEntity(invoiceDto.getTransaction()))")
+    @Mapping(target = "subtotal", ignore = true)
+    @Mapping(target = "tax", ignore = true)
+    @Mapping(target = "discount", ignore = true)
+    @Mapping(target = "total", ignore = true)
+    @Mapping(target = "owed", ignore = true)
+    @Mapping(target = "paid", ignore = true)
+    public abstract Invoice mapToEntity(InvoiceRequest invoiceDto);
 
     @Mapping(target = "clientCode", expression = "java(invoice.getClient().getCode())")
     @Mapping(target = "clientName", expression = "java(invoice.getClient().getName())")
     @Mapping(target = "status", expression = "java(invoice.getStatus().getStatus())")
     @Mapping(target = "details", expression = "java(mapDetailsToDto(invoice.getDetails()))")
     @Mapping(target = "transaction", expression = "java(mapTransactionToDto(invoice.getTransaction()))") // TODO: MAP transaction entity -> DTO
-    public abstract InvoiceDto mapToDto(Invoice invoice);
+    public abstract InvoiceResponse mapToDto(Invoice invoice);
 
 
     Individual getClient(String code){
         return individualService.getIndividual_Entity(code);
     }
 
-    List<InvoiceDetailDto> mapDetailsToDto(List<InvoiceDetail> details){
+    List<InvoiceDetailResponse> mapDetailsToDto(List<InvoiceDetail> details){
         // Map every detail in the invoice detail entity to invoice detail DTO.
         return details.stream()
                 .map(invoiceDetailMapper :: mapToDto)
                 .collect(Collectors.toList());
     }
-    List<InvoiceDetail> mapDetailsToEntity(List<InvoiceDetailDto> details){
+    List<InvoiceDetail> mapDetailsToEntity(List<InvoiceDetailRequest> details){
         // Map every detail in the invoice details DTO to invoice detail entity
         return details.stream()
                 .map(invoiceDetailMapper :: mapToEntity)

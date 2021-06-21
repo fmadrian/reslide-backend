@@ -1,12 +1,11 @@
 package com.mygroup.backendReslide.controller;
 
-import com.mygroup.backendReslide.dto.InvoiceDto;
+import com.mygroup.backendReslide.dto.request.InvoiceRequest;
 import com.mygroup.backendReslide.exceptions.DiscountNotValidException;
 import com.mygroup.backendReslide.exceptions.PaymentExceedsDebtException;
 import com.mygroup.backendReslide.exceptions.PaymentQuantityException;
 import com.mygroup.backendReslide.exceptions.ProductQuantityException;
 import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
-import com.mygroup.backendReslide.model.Payment;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import com.mygroup.backendReslide.service.InvoiceService;
 import lombok.AllArgsConstructor;
@@ -23,9 +22,9 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
     private final GenericResponseService responseService;
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody InvoiceDto invoiceDto){
+    public ResponseEntity create(@RequestBody InvoiceRequest invoiceRequest){
         try{
-            invoiceService.create(invoiceDto);
+            invoiceService.create(invoiceRequest);
             return new ResponseEntity("Created", HttpStatus.OK);
         }catch (ProductNotFoundException | ProductQuantityException | DiscountNotValidException
         | PaymentQuantityException | PaymentExceedsDebtException e){

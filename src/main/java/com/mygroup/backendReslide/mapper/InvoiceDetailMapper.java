@@ -1,7 +1,8 @@
 package com.mygroup.backendReslide.mapper;
 
 import com.mygroup.backendReslide.dto.DiscountDto;
-import com.mygroup.backendReslide.dto.InvoiceDetailDto;
+import com.mygroup.backendReslide.dto.request.InvoiceDetailRequest;
+import com.mygroup.backendReslide.dto.response.InvoiceDetailResponse;
 import com.mygroup.backendReslide.model.Discount;
 import com.mygroup.backendReslide.model.InvoiceDetail;
 import com.mygroup.backendReslide.model.Product;
@@ -21,17 +22,21 @@ public abstract class InvoiceDetailMapper {
     @Autowired
     private DiscountMapper discountMapper;
 
-    @Mapping(target = "product", expression = "java(getProduct(invoiceDetailDto.getProductCode()))")
-    @Mapping(target = "discountApplied", expression = "java(mapDiscountToEntity(invoiceDetailDto.getDiscountApplied()))")
+    @Mapping(target = "product", expression = "java(getProduct(invoiceDetailRequest.getProductCode()))")
+    @Mapping(target = "discountApplied", expression = "java(mapDiscountToEntity(invoiceDetailRequest.getDiscountApplied()))")
     @Mapping(target = "status",
-            expression = "java(getInvoiceDetailStatus(invoiceDetailDto.getStatus()))")
-    public abstract InvoiceDetail mapToEntity(InvoiceDetailDto invoiceDetailDto);
+            expression = "java(getInvoiceDetailStatus(invoiceDetailRequest.getStatus()))")
+    @Mapping(target = "subtotal", ignore = true)
+    @Mapping(target = "tax", ignore = true)
+    @Mapping(target = "discount", ignore = true)
+    @Mapping(target = "total", ignore = true)
+    public abstract InvoiceDetail mapToEntity(InvoiceDetailRequest invoiceDetailRequest);
 
     @Mapping(target = "productCode", expression = "java(invoiceDetail.getProduct().getCode())")
     @Mapping(target = "productName", expression = "java(invoiceDetail.getProduct().getName())")
     @Mapping(target = "discountApplied", expression = "java(mapDiscountToDto(invoiceDetail.getDiscountApplied()))")
     @Mapping(target = "status", expression = "java(invoiceDetail.getStatus().getStatus())")
-    public abstract InvoiceDetailDto mapToDto(InvoiceDetail invoiceDetail);
+    public abstract InvoiceDetailResponse mapToDto(InvoiceDetail invoiceDetail);
 
     Discount mapDiscountToEntity(DiscountDto discountDto){
         return discountMapper.mapToEntity(discountDto);

@@ -1,5 +1,6 @@
-package com.mygroup.backendReslide.dto;
+package com.mygroup.backendReslide.dto.request;
 
+import com.mygroup.backendReslide.dto.TransactionDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InvoiceDto {
+public class InvoiceRequest {
     private Long id;
     private String clientCode;
     private String clientName;
@@ -19,12 +20,5 @@ public class InvoiceDto {
 
     private String status; // Invoice status
 
-    private BigDecimal subtotal;
-    private BigDecimal tax;
-    private BigDecimal discount;
-    private BigDecimal total;
-    private BigDecimal paid;
-    private BigDecimal owed;
-
-    private List<InvoiceDetailDto> details;
+    private List<InvoiceDetailRequest> details;
 }

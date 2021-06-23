@@ -26,10 +26,6 @@ public abstract class InvoiceDetailMapper {
     @Mapping(target = "discountApplied", expression = "java(mapDiscountToEntity(invoiceDetailRequest.getDiscountApplied()))")
     @Mapping(target = "status",
             expression = "java(getInvoiceDetailStatus(invoiceDetailRequest.getStatus()))")
-    @Mapping(target = "subtotal", ignore = true)
-    @Mapping(target = "tax", ignore = true)
-    @Mapping(target = "discount", ignore = true)
-    @Mapping(target = "total", ignore = true)
     public abstract InvoiceDetail mapToEntity(InvoiceDetailRequest invoiceDetailRequest);
 
     @Mapping(target = "productCode", expression = "java(invoiceDetail.getProduct().getCode())")

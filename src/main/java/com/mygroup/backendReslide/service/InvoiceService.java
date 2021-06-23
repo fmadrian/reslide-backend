@@ -35,7 +35,7 @@ public class InvoiceService {
 
         Transaction transaction = invoice.getTransaction();
         // Validates the different invoice details before saving them.
-        List<InvoiceDetail> invoiceDetails = invoiceDetailService.validateCreatedInvoiceDetails(invoice.getDetails());
+        List<InvoiceDetail> invoiceDetails = invoiceDetailService.validateInvoiceDetails(invoice.getDetails());
 
         // The map function help us to return a value from the object
         // That value is added using the reduce function that takes every value returned by map and applies it the add function.
@@ -115,41 +115,7 @@ public class InvoiceService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void recalculateInvoice(Invoice invoice) {
 
-        List<InvoiceDetail> invoiceDetails = invoice.getDetails();
-        List<Payment> payments = invoice.getTransaction().getPayments();
-
-        // Adds every subtotal added to each invoice detail.
-        BigDecimal subtotal = invoiceDetails.stream()
-                .map(invoiceDetail -> invoiceDetail.getSubtotal()) // .map(invoiceDetail -> {return invoiceDetail.getSubtotal();})
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Adds every tax added to each invoice detail.
-        BigDecimal tax = invoiceDetails.stream()
-                .map(invoiceDetail -> invoiceDetail.getTax())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Adds every discount added to each invoice detail.
-        BigDecimal discount = invoiceDetails.stream()
-                .map(invoiceDetail -> invoiceDetail.getDiscount())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Adds every total added to each invoice detail.
-        BigDecimal total = invoiceDetails.stream()
-                .map(invoiceDetail -> invoiceDetail.getTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Adds every payment made to the invoice.
-        BigDecimal paid = payments.stream()
-                .map(payment -> payment.getPaid())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        // Adds the values to the invoice.
-        invoice.setSubtotal(subtotal);
-        invoice.setDiscount(discount);
-        invoice.setTax(tax);
-        invoice.setTotal(total);
-        invoice.setPaid(paid);
-        invoice.setOwed(total.subtract(paid)); // total - paid
-        invoiceRepository.save(invoice);
-    }
     private InvoiceResponse hideInvoiceDetails(InvoiceResponse invoiceResponse){
         invoiceResponse.setDetails(null);
         return invoiceResponse;

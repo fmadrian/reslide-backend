@@ -14,8 +14,6 @@ public class InvoiceDetailRequest {
     private Long id;
     private Long invoiceId;
     private String productCode;
-    private String productName;
-    private BigDecimal priceByUnit; // Price of the item at the time of the purchase
     private BigDecimal quantity;
 
     private DiscountDto discountApplied;

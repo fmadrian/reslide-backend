@@ -12,8 +12,10 @@ import java.time.Instant;
 @NoArgsConstructor
 public class PaymentDto {
     private Long id;
+    private Long transactionId;
+
     private String username;
-    private Instant date;
+    private String date;
     private String paymentMethod;
 
     private BigDecimal paid;

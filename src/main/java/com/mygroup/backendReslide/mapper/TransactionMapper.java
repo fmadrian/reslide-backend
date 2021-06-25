@@ -32,6 +32,7 @@ public abstract class TransactionMapper {
 
     @Mapping(target = "username", expression = "java(transaction.getUser().getUsername())")
     @Mapping(target = "payments", expression = "java(mapPaymentsToDto(transaction.getPayments()))")
+    @Mapping(target = "date", expression = "java(transaction.getDate().toString())")
     public abstract TransactionDto mapToDto(Transaction transaction);
 
     List<PaymentDto> mapPaymentsToDto(List<Payment> payments){

@@ -13,7 +13,7 @@ import java.util.List;
 public class TransactionDto {
     private Long id;
     private String username;
-    private Instant date;
+    private String date;
     private String notes;
     private List<PaymentDto> payments;
 }

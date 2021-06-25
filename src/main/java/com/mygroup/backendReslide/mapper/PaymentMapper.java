@@ -22,7 +22,9 @@ public abstract class PaymentMapper {
     public abstract Payment mapToEntity(PaymentDto paymentDto);
 
     @Mapping(target = "username", expression = "java(payment.getUser().getUsername())")
+    @Mapping(target = "transactionId", ignore = true)
     @Mapping(target = "paymentMethod", expression = "java(payment.getPaymentMethod().getName())")
+    @Mapping(target = "date", expression = "java(payment.getDate().toString())")
     public abstract PaymentDto mapToDto(Payment payment);
 
     // Services can't be used by the Impl class

@@ -25,7 +25,6 @@ public class InvoiceService {
     private final InvoiceDetailService invoiceDetailService;
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
-    private final BigDecimal TAX = new BigDecimal(0.13);
 
     @Transactional
     public void create(InvoiceRequest invoiceDto) {

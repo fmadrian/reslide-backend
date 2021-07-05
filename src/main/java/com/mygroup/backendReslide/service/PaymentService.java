@@ -144,7 +144,32 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.ACTIVE);
         return payment;
     }
-
+    @Transactional
+    public List<Payment> validateOrderPayments(List<Payment> payments, Order order) {
+        return payments.stream()
+                .map(payment -> validateInvoicePayment(payment, order))
+                .collect(Collectors.toList());
+    }
+    @Transactional
+    public Payment validateInvoicePayment(Payment payment, Order order){
+        // payment.setUser(authService.getCurrentUser()); // TODO: Remove the commentary.
+        // Validate amount (Paid now + paid before <= total debt)
+        if(payment.getPaid().add(order.getPaid()).compareTo(order.getOwed()) == 1){
+            throw new PaymentExceedsDebtException(payment.getPaid(), order.getOwed());
+        }
+        if(payment.getPaid().compareTo(BigDecimal.ZERO) != 1){
+            throw new PaymentQuantityException(payment.getPaid());
+        }
+        // Adjust the owed value in the invoice.
+        // The invoice will be changed in the invoice create method.
+        payment.setOwedBefore(order.getOwed());
+        // Change made in the invoice, just as a reference for the next payment line (if there is any).
+        order.setOwed(order.getOwed().subtract(payment.getPaid()));
+        payment.setOwedAfter(order.getOwed());
+        // Set the status.
+        payment.setStatus(PaymentStatus.ACTIVE);
+        return payment;
+    }
     private Invoice getInvoice(Long transactionId){
         // Search invoice
         Invoice invoice = invoiceRepository.findByTransactionId(transactionId)

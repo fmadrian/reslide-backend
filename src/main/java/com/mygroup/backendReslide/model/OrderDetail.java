@@ -22,10 +22,8 @@ public class OrderDetail {
     @JoinColumn(name = "productId", referencedColumnName = "id")
     private Product product;
 
-    @NotBlank(message = "Quantity can't be empty.")
+    private BigDecimal priceByUnit;
     private BigDecimal quantity;
-
-    @NotBlank(message = "Total can't be empty.")
     private BigDecimal total;
 
     @Column(nullable = false)

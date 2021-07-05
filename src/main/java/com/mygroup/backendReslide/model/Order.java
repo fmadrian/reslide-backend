@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -29,16 +30,12 @@ public class Order {
     @JoinColumn(name = "providerId", referencedColumnName = "id")
     private Individual provider;
 
-    @NotBlank(message = "Delivery date can't be empty.")
-    private Date deliveryDate;
+    private Instant date;
+    private Instant expectedDeliveryDate;
+    private Instant actualDeliveryDate;
 
-    @NotBlank(message = "Total can't be empty.")
     private BigDecimal total;
-
-    @NotBlank(message = "Paid can't be empty.")
     private BigDecimal paid;
-
-    @NotBlank(message = "Owed can't be empty.")
     private BigDecimal owed;
 
     @Column(nullable = false)

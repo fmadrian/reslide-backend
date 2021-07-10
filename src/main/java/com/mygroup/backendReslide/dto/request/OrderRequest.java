@@ -18,8 +18,8 @@ public class OrderRequest {
     private Long id;
     private TransactionDto transaction;
     private String providerCode;
-    private String date;
     private String expectedDeliveryDate;
+    private String actualDeliveryDate;
     private String status;
     private List<OrderDetailRequest> details;
 }

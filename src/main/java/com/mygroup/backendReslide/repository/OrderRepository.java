@@ -18,9 +18,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             nativeQuery = true)
     List<Order> findByDate(@Param("start") Instant start, @Param("end") Instant end);
 
-    @Query(value = "SELECT * FROM \"fn_findOrderByDateAndClientCode\"(:start, :end, :clientCode)",
+    @Query(value = "SELECT * FROM \"fn_findOrderByDateAndProviderCode\"(:start, :end, :clientCode)",
             nativeQuery = true)
-    List<Order> findByDateAndClientCode(@Param("start")Instant start, @Param("end")Instant end,
+    List<Order> findByDateAndProviderCode(@Param("start")Instant start, @Param("end")Instant end,
                                           @Param("clientCode")String clientCode);
 
     @Query(value = "SELECT * FROM \"fn_findOrderByTransactionId\"(:transactionId)",

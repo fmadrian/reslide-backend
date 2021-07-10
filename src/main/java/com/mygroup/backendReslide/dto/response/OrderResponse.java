@@ -21,7 +21,6 @@ public class OrderResponse {
     private TransactionDto transaction;
     private String providerName;
     private String providerCode;
-    private String date;
     private String expectedDeliveryDate;
     private String actualDeliveryDate;
     private BigDecimal total;

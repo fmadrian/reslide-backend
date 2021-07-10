@@ -32,7 +32,6 @@ public abstract class OrderMapper{
     @Mapping(target = "provider", expression = "java(getProvider(orderRequest.getProviderCode()))")
     @Mapping(target = "transaction", expression = "java(mapTransactionToEntity(orderRequest.getTransaction()))")
     @Mapping(target = "status", expression = "java(getOrderStatus(orderRequest.getStatus()))")
-    @Mapping(target = "details", expression = "java(mapOrderDetailsToEntity(orderRequest.getDetails()))")
     public abstract Order mapToEntity(OrderRequest orderRequest);
 
     @Mapping(target = "transaction", expression = "java(mapTransactionToDto(order.getTransaction()))")
@@ -48,16 +47,25 @@ public abstract class OrderMapper{
     }
     Individual getProvider(String code){ return individualService.getIndividual_Entity(code);}
     OrderStatus getOrderStatus(String status) {
-        return OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        if(status != null) {
+            return OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        }
+        return null;
     }
     List<OrderDetail> mapOrderDetailsToEntity(List<OrderDetailRequest> details){
-        return details.stream()
-                .map(orderDetailMapper::mapToEntity)
-                .collect(Collectors.toList());
+        if(details != null){
+            return details.stream()
+                    .map(orderDetailMapper::mapToEntity)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
     List<OrderDetailResponse> mapOrderDetailsToDto(List<OrderDetail> details){
-        return details.stream()
-                .map(orderDetailMapper::mapToDto)
-                .collect(Collectors.toList());
+        if(details != null) {
+            return details.stream()
+                    .map(orderDetailMapper::mapToDto)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 }

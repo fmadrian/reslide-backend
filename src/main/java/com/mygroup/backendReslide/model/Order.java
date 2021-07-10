@@ -30,7 +30,6 @@ public class Order {
     @JoinColumn(name = "providerId", referencedColumnName = "id")
     private Individual provider;
 
-    private Instant date;
     private Instant expectedDeliveryDate;
     private Instant actualDeliveryDate;
 

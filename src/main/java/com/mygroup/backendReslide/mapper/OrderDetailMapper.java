@@ -34,6 +34,9 @@ public abstract class OrderDetailMapper {
         return productService.getProduct_Entity(code);
     }
     OrderDetailStatus getOrderDetailStatus(String status){
-        return OrderDetailStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        if(status != null) {
+            return OrderDetailStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        }
+        return null;
     }
 }

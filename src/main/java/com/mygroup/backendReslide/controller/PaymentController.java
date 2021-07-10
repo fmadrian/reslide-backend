@@ -3,10 +3,8 @@ package com.mygroup.backendReslide.controller;
 import com.mygroup.backendReslide.dto.PaymentDto;
 import com.mygroup.backendReslide.dto.PaymentMethodDto;
 import com.mygroup.backendReslide.dto.response.GenericResponse;
+import com.mygroup.backendReslide.exceptions.*;
 import com.mygroup.backendReslide.exceptions.InternalError;
-import com.mygroup.backendReslide.exceptions.PaymentExceedsDebtException;
-import com.mygroup.backendReslide.exceptions.PaymentQuantityException;
-import com.mygroup.backendReslide.exceptions.TransactionDoesNotMatchException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.PaymentMethodExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.PaymentMethodNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.PaymentNotFoundException;
@@ -43,7 +41,8 @@ public class PaymentController {
             paymentService.update(paymentRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Updated."), HttpStatus.OK);
         }catch (PaymentNotFoundException | PaymentExceedsDebtException |
-                TransactionDoesNotMatchException | TransactionNotFoundException | PaymentQuantityException e ){
+                TransactionDoesNotMatchException | TransactionNotFoundException | PaymentQuantityException |
+                PaymentAndTransactionDoNotMatch e ){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
@@ -55,7 +54,7 @@ public class PaymentController {
         try{
             paymentService.overturn(paymentRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Updated."), HttpStatus.OK);
-        }catch (TransactionDoesNotMatchException | TransactionNotFoundException e ){
+        }catch (TransactionDoesNotMatchException | TransactionNotFoundException | PaymentAndTransactionDoNotMatch e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();

@@ -36,15 +36,21 @@ public abstract class TransactionMapper {
     public abstract TransactionDto mapToDto(Transaction transaction);
 
     List<PaymentDto> mapPaymentsToDto(List<Payment> payments){
-        return payments.stream()
-                .map(paymentMapper :: mapToDto)
-                .collect(Collectors.toList());
+        if(payments != null){
+            return payments.stream()
+                    .map(paymentMapper :: mapToDto)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     List<Payment> mapPaymentsToEntity(List<PaymentDto> payments){
-        return payments.stream()
-                .map(paymentMapper :: mapToEntity)
-                .collect(Collectors.toList());
+        if(payments != null){
+            return payments.stream()
+                    .map(paymentMapper :: mapToEntity)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     // User service function can't be used by the Impl class

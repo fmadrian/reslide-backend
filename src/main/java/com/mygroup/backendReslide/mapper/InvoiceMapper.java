@@ -45,7 +45,7 @@ public abstract class InvoiceMapper {
     @Mapping(target = "clientName", expression = "java(invoice.getClient().getName())")
     @Mapping(target = "status", expression = "java(invoice.getStatus().getStatus())")
     @Mapping(target = "details", expression = "java(mapDetailsToDto(invoice.getDetails()))")
-    @Mapping(target = "transaction", expression = "java(mapTransactionToDto(invoice.getTransaction()))") // TODO: MAP transaction entity -> DTO
+    @Mapping(target = "transaction", expression = "java(mapTransactionToDto(invoice.getTransaction()))")
     public abstract InvoiceResponse mapToDto(Invoice invoice);
 
 

@@ -82,7 +82,6 @@ public class JwtProvider {
         // parseClaimsJws verifies the token with the returned public key.
         parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
         return true;
-        // TODO: ERROR MESSAGES
     }
 
     private PublicKey getPublicKey(){

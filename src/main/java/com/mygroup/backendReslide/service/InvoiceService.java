@@ -25,13 +25,14 @@ public class InvoiceService {
     private final InvoiceDetailService invoiceDetailService;
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
+    private final AuthService authService;
 
     @Transactional
     public void create(InvoiceRequest invoiceDto) {
 
         // Maps the invoice dto to entity.
         Invoice invoice = invoiceMapper.mapToEntity(invoiceDto);
-
+        invoice.getTransaction().setUser(authService.getCurrentUser());
         Transaction transaction = invoice.getTransaction();
         // Validates the different invoice details before saving them.
         List<InvoiceDetail> invoiceDetails = invoiceDetailService.validateInvoiceDetails(invoice.getDetails());

@@ -31,11 +31,14 @@ public class OrderService {
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
     private final OrderDetailService orderDetailService;
+    private final AuthService authService;
 
     @Transactional
     public void create(OrderRequest orderRequest) {
         // Map the order.
+        // Set the users.
         Order order = orderMapper.mapToEntity(orderRequest);
+        order.getTransaction().setUser(authService.getCurrentUser());
         List<OrderDetail> details = order.getDetails();
         List<Payment> payments = order.getTransaction().getPayments();
         // Validate the order details.
@@ -81,7 +84,7 @@ public class OrderService {
         // Change the transaction and order details.
         order.getTransaction().setDate(modifiedOrder.getTransaction().getDate());
         order.getTransaction().setNotes(modifiedOrder.getTransaction().getNotes());
-
+        order.getTransaction().setUser(authService.getCurrentUser()); // Last user who manipulated the order.
         order.setActualDeliveryDate(modifiedOrder.getActualDeliveryDate());
         order.setExpectedDeliveryDate(modifiedOrder.getExpectedDeliveryDate());
         order.setStatus(modifiedOrder.getStatus());

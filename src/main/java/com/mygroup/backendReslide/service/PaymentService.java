@@ -173,7 +173,7 @@ public class PaymentService {
     }
     @Transactional
     public Payment validateInvoicePayment(Payment payment, Invoice invoice){
-        // payment.setUser(authService.getCurrentUser()); // TODO: Remove the commentary.
+        payment.setUser(authService.getCurrentUser());
         // Payment can't exceed the debt.
         if(payment.getPaid().compareTo(invoice.getOwed()) == 1){
             throw new PaymentExceedsDebtException(payment.getPaid(), invoice.getOwed());
@@ -199,7 +199,7 @@ public class PaymentService {
     }
     @Transactional
     public Payment validateOrderPayment(Payment payment, Order order){
-        // payment.setUser(authService.getCurrentUser()); // TODO: Remove the commentary.
+        payment.setUser(authService.getCurrentUser());
         // Payment can't exceed the debt.
         if(payment.getPaid().compareTo(order.getOwed()) == 1){
             throw new PaymentExceedsDebtException(payment.getPaid(), order.getOwed());

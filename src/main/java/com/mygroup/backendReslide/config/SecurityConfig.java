@@ -43,10 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**")
                 .permitAll()
                 .anyRequest()
-                //.authenticated();// Any other request HAS TO BE authenticated.
-                 .permitAll();
-        //httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .authenticated();// Any other request HAS TO BE authenticated.
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{

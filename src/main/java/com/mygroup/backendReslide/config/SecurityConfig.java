@@ -34,32 +34,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**") // Allows access to GET method into the auth API without authentication token (requirement for login)
                 .permitAll()
+                .antMatchers("/v2/api-docs", // Swagger configuration
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui/",
+                        "/swagger-ui/**",
+                        "/webjars/**")
+                .permitAll()
                 .anyRequest()
-                .authenticated();// Any request that is authenticated, is allowed.
+                //.authenticated();// Any other request HAS TO BE authenticated.
+                 .permitAll();
+        //httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
     }
-//         In summary, this allows any request (GET, POST, DELETE, ...)  TO api/auth/...
-//              In this scenario any request to 'api/auth/' or 'api/auth/myexample/' is allowed for any client (with / without) authentication token
-//         Allows any GET (and ONLY GET) request ONLY TO 'api/subreddit'.
-//              In this case, a GET request to api/subreddit will be allowed for any client.
-//              In this case, a POST request to api/subreddit won't be allowed for a client without an authentication token.
-//              In this case, a GET request to api/subreddit/mysubreddit won't be allowed without an authentication token.
-//         Allows any GET (and ONLY GET) request ONLY TO 'api/posts' and 'api/posts/**'.
-//              In this case a GET request to: 'api/posts' or 'api/posts/32', will be allowed for any client.
-//              In this case a POST request to: 'api/posts' is forbidden to clients without an authentication token.
-//          Defining multiple url into one antmatchers is the equivalent to do it one by one. If we need to, we could specify the same operations for all of them.
-    // Any other request to another endpoint, has to be authenticated to go through. Otherwise, it will be rejected.
-//
-//         When we say any request includes requests made without the Bearer authentication token.
-//         If a request is allowed, but is not mapped by any controller, it will return a 404 error.
-//         If a request is not allowed, it will return a 403 error.
-
-
-
-    // Letting know Spring Security about the JWT Authentication Filter Class
-    // Adding the jwtAuthenticationFilter and the UsernamePasswordAuthenticationFilter
-    // Spring checks first for the access (JWT) token, then checks for the UsernamePasswordAuthentication key
-    // httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    //}
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{
         // We have to create a userDetailsService implementation for the interface userDetailsService returned by the Manager

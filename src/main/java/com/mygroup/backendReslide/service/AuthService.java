@@ -9,13 +9,10 @@ import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsE
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
-import com.mygroup.backendReslide.model.Individual;
-import com.mygroup.backendReslide.model.IndividualType;
-import com.mygroup.backendReslide.model.User;
+import com.mygroup.backendReslide.mapper.UserMapper;
+import com.mygroup.backendReslide.model.*;
 import com.mygroup.backendReslide.model.status.UserRole;
-import com.mygroup.backendReslide.repository.IndividualRepository;
-import com.mygroup.backendReslide.repository.IndividualTypeRepository;
-import com.mygroup.backendReslide.repository.UserRepository;
+import com.mygroup.backendReslide.repository.*;
 import com.mygroup.backendReslide.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -29,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -37,7 +35,11 @@ public class AuthService {
     private final IndividualTypeRepository individualTypeRepository;
     private final UserRepository userRepository;
     private final IndividualRepository individualRepository;
+    private final ContactRepository contactRepository;
+    private final AddressRepository addressRepository;
+
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
@@ -46,35 +48,29 @@ public class AuthService {
     public void createUser(UserRequest userRequest){
         // Verify that username / code doesn't exist in the database.
         if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()){
-            throw new UsernameExistsException(userRequest.getUsername()); // Throws an exception if it already exists.
-        }if(individualRepository.findByCodeIgnoreCase(userRequest.getCode()).isPresent()){
-            throw new IndividualCodeExistsException(userRequest.getCode()); // Throws an exception if it already exists.
+            throw new UsernameExistsException(userRequest.getUsername());
+        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode()).isPresent()){
+            throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
         }
-
-        // Lookup for individual type.
-        IndividualType individualType = individualTypeRepository.findByNameIgnoreCase("PERSON").orElseThrow(()-> {throw new IndividualTypeNotFoundException("PERSON");});
-        // Create individual with its details.
-        Individual individual = new Individual();
-        individual.setCode(userRequest.getCode());
-        individual.setName(userRequest.getName());
-        individual.setNotes(userRequest.getNotes());
-        individual.setEnabled(true);
-        individual.setType(individualType);
-        // Create user with its details.
-        User user = new User();
-        user.setUsername(userRequest.getUsername());
+        // Create user from mapped object and some changes.
+        User user = userMapper.mapToEntity(userRequest);
         user.setPassword(passwordEncoder.encode(userRequest.getPassword())); // Encodes password.
         user.setCreated(Instant.now());
         user.setRole(UserRole.CASHIER);
         user.setEnabled(true);
-        // Link individual and user.
-        user.setIndividual(individual);
-
+        List<Contact> contacts = user.getIndividual().getContacts();
+        List<Address> addresses = user.getIndividual().getAddresses();
+        // Save the contacts and the addresses, then save the individual.
+        if(!contacts.isEmpty())
+            contactRepository.saveAll(contacts);
+        if(!addresses.isEmpty())
+            addressRepository.saveAll(addresses);
         // Save BOTH OBJECTS.
         // WE HAVE TO SAVE BOTH OBJECTS, OTHERWISE THE SECOND OBJECT WON'T BE ABLE TO REFERENCE THE FIRST ONE.
-        individualRepository.save(individual);
+        individualRepository.save(user.getIndividual());
         userRepository.save(user);
     }
+
     @Transactional
     public AuthenticationResponse login(LoginRequest loginRequest) {
 

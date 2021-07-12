@@ -1,4 +1,4 @@
-package com.mygroup.backendReslide.dto.request;
+package com.mygroup.backendReslide.dto.response;
 
 import com.mygroup.backendReslide.dto.IndividualDto;
 import lombok.AllArgsConstructor;
@@ -8,13 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest {
+public class UserResponse {
     // User's name
     private String username;
-    // User's password
-    private String password;
-    // Person's notes
-    private String notes;
     // Person's name and password
     private IndividualDto individual;
 }

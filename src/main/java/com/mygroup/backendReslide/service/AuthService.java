@@ -32,7 +32,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AuthService {
 
-    private final IndividualTypeRepository individualTypeRepository;
     private final UserRepository userRepository;
     private final IndividualRepository individualRepository;
     private final ContactRepository contactRepository;
@@ -40,7 +39,6 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
@@ -70,7 +68,40 @@ public class AuthService {
         individualRepository.save(user.getIndividual());
         userRepository.save(user);
     }
+    @Transactional
+    public void updateUser(UserRequest userRequest){
+        User updatedUser = userMapper.mapToEntity(userRequest);
+        // Searches the user
+        User user = userRepository.findByUsernameIgnoreCase(userRequest.getUsername())
+                .orElseThrow(()->new UserNotFoundException(userRequest.getUsername()));
+        // Verifies that the updated username / code doesn't exist in the database.
+        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()
+        && !user.getUsername().equals(userRequest.getUsername())){
+            throw new UsernameExistsException(userRequest.getUsername());
+        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode()).isPresent()
+        && !user.getIndividual().getName().equals(userRequest.getIndividual().getCode())){
+            throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
+        }
+        // Do the modifications.
+        user.setUsername(updatedUser.getUsername());
+        user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encodes password.
 
+        user.getIndividual().setName(updatedUser.getIndividual().getName());
+        user.getIndividual().setCode(updatedUser.getIndividual().getCode());
+        user.getIndividual().setAddresses(updatedUser.getIndividual().getAddresses());
+        user.getIndividual().setContacts(updatedUser.getIndividual().getContacts());
+        user.getIndividual().setNotes(updatedUser.getIndividual().getNotes());
+
+        List<Contact> contacts = user.getIndividual().getContacts();
+        List<Address> addresses = user.getIndividual().getAddresses();
+        // Save the contacts and the addresses, then save the individual.
+        if(!contacts.isEmpty())
+            contactRepository.saveAll(contacts);
+        if(!addresses.isEmpty())
+            addressRepository.saveAll(addresses);
+        individualRepository.save(user.getIndividual());
+        userRepository.save(user);
+    }
     @Transactional
     public AuthenticationResponse login(LoginRequest loginRequest) {
 

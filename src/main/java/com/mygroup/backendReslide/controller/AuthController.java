@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController // REST
@@ -39,7 +40,18 @@ public class AuthController {
             return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @PutMapping("/update/user")
+    public ResponseEntity updateUser(@RequestBody UserRequest userRequest){
+        try {
+            authService.updateUser(userRequest);
+            return new ResponseEntity(responseService.buildInformation("Updated."), HttpStatus.OK);
+        }catch (UsernameNotFoundException | UsernameExistsException | IndividualCodeExistsException e){
+            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest){
         try {

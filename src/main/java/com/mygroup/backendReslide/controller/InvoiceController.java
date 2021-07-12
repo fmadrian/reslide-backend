@@ -5,6 +5,7 @@ import com.mygroup.backendReslide.exceptions.DiscountNotValidException;
 import com.mygroup.backendReslide.exceptions.PaymentExceedsDebtException;
 import com.mygroup.backendReslide.exceptions.PaymentQuantityException;
 import com.mygroup.backendReslide.exceptions.ProductQuantityException;
+import com.mygroup.backendReslide.exceptions.notFound.InvoiceNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import com.mygroup.backendReslide.service.InvoiceService;
@@ -28,6 +29,18 @@ public class InvoiceController {
             return new ResponseEntity("Created", HttpStatus.OK);
         }catch (ProductNotFoundException | ProductQuantityException | DiscountNotValidException
         | PaymentQuantityException | PaymentExceedsDebtException e){
+            return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/update")
+    public ResponseEntity update(@RequestBody InvoiceRequest invoiceRequest){
+        try{
+            invoiceService.update(invoiceRequest);
+            return new ResponseEntity("Updated", HttpStatus.OK);
+        }catch (InvoiceNotFoundException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();

@@ -89,6 +89,19 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
     }
 
+    @Transactional
+    public void update(InvoiceRequest invoiceRequest) {
+        Invoice updatedInvoice = invoiceMapper.mapToEntity(invoiceRequest);
+        Invoice invoice = invoiceRepository.findById(invoiceRequest.getId())
+                .orElseThrow(()-> new InvoiceNotFoundException(invoiceRequest.getId()));
+        invoice.getTransaction().setNotes(updatedInvoice.getTransaction().getNotes());
+        invoice.getTransaction().setDate(updatedInvoice.getTransaction().getDate());
+        invoice.getTransaction().setUser(authService.getCurrentUser());
+
+        transactionRepository.save(invoice.getTransaction());
+        invoiceRepository.save(invoice);
+
+    }
     // Returns an specific invoice with its details.
     @Transactional(readOnly = true)
     public InvoiceResponse get(Long id) {

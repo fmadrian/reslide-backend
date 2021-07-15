@@ -55,10 +55,10 @@ public class OrderController {
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/search/client")
-    public ResponseEntity searchByClient(@RequestParam String start, @RequestParam String end, @RequestParam String clientCode){
+    @GetMapping("/search/provider")
+    public ResponseEntity searchByProvider(@RequestParam String start, @RequestParam String end, @RequestParam String providerCode){
         try{
-            return new ResponseEntity(orderService.searchByClient(start, end, clientCode), HttpStatus.OK);
+            return new ResponseEntity(orderService.searchByProvider(start, end, providerCode), HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);

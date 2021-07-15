@@ -103,8 +103,8 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
-    public List<OrderResponse> searchByClient(String start, String end, String clientCode) {
-        return orderRepository.findByDateAndProviderCode(Instant.parse(start), Instant.parse(end),clientCode)
+    public List<OrderResponse> searchByProvider(String start, String end, String providerCode) {
+        return orderRepository.findByDateAndProviderCode(Instant.parse(start), Instant.parse(end),providerCode)
                 .stream()
                 .map(orderMapper :: mapToDto)
                 .map(this :: hideOrderDetails) // Hide the invoice details.

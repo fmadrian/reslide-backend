@@ -84,7 +84,12 @@ public class IndividualService {
                     .collect(Collectors.toList());
         }
     }
-
+    public IndividualDto getIndividual(Long id){
+        return individualMapper.mapToDto(
+                individualRepository.findById(id)
+                .orElseThrow(()-> new IndividualNotFoundException(id))
+        );
+    }
     public Individual getIndividual_Entity(String code) {
         return individualRepository.findByCodeIgnoreCase(code)
                 .orElseThrow(()-> new IndividualNotFoundException(code));

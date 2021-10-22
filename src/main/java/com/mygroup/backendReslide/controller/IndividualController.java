@@ -54,4 +54,15 @@ public class IndividualController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/get")
+    public ResponseEntity getIndividual(@RequestParam Long id){
+        try{
+            return new ResponseEntity<IndividualDto>(individualService.getIndividual(id), HttpStatus.OK);
+        }catch(IndividualNotFoundException e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
+        }catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

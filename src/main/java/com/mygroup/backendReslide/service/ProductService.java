@@ -1,6 +1,8 @@
 package com.mygroup.backendReslide.service;
 
 import com.mygroup.backendReslide.dto.ProductDto;
+import com.mygroup.backendReslide.exceptions.PriceNotValidException;
+import com.mygroup.backendReslide.exceptions.QuantityNotValidException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ProductExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.MeasurementTypeNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.ProductBrandNotFoundException;
@@ -20,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -55,19 +58,20 @@ public class ProductService {
         product.setType(productType);
         product.setMeasurementType(measurementType);
         product.setProductStatus(ProductStatus.ACTIVE);
-
+        validatePriceAndQuantity(product);
         // Store it.
         productRepository.save(product);
     }
     @Transactional
     public void update(ProductDto productRequest){
-        // Validate the code.
-        if(productRepository.findByCodeIgnoreCase(productRequest.getCode()).isPresent()){
-            throw new ProductExistsException(productRequest.getCode());
-        }
         // Search the product
         Product product = productRepository.findById(productRequest.getId())
                 .orElseThrow(()-> new ProductNotFoundException(productRequest.getId()));
+        // Validate the code.
+        if(productRepository.findByCodeIgnoreCase(productRequest.getCode()).isPresent()
+                && !productRequest.getCode().equals(product.getCode())) {
+            throw new ProductExistsException(productRequest.getCode());
+        }
         // Search the product brand.
         ProductBrand productBrand = productBrandRepository.findByNameIgnoreCase(productRequest.getBrand())
                 .orElseThrow(()->new ProductBrandNotFoundException(productRequest.getBrand()));
@@ -78,7 +82,7 @@ public class ProductService {
         MeasurementType measurementType = measurementTypeRepository.findByNameIgnoreCase(productRequest.getMeasurementType())
                 .orElseThrow(()->new MeasurementTypeNotFoundException(productRequest.getMeasurementType()));
         // Gets the product status
-        ProductStatus productStatus = ProductStatus.valueOf(productRequest.getProductStatus());
+        ProductStatus productStatus = ProductStatus.valueOf(productRequest.getProductStatus().toUpperCase(Locale.ROOT));
 
         // Do the changes
         product.setBrand(productBrand);
@@ -90,7 +94,7 @@ public class ProductService {
         product.setPrice(productRequest.getPrice());
         product.setNotes(productRequest.getNotes());
         product.setProductStatus(productStatus);
-
+        validatePriceAndQuantity(product);
         // Store them.
         productRepository.save(product);
     }
@@ -165,14 +169,23 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
-    public ProductDto getProduct(String code){
-        return productMapper.mapToDto(productRepository.findByCodeIgnoreCase(code)
-                .orElseThrow(()-> new ProductNotFoundException(code)));
+    public ProductDto getProduct(Long id){
+        return productMapper.mapToDto(productRepository.findById(id)
+                .orElseThrow(()-> new ProductNotFoundException(id)));
     }
 
     @Transactional(readOnly = true)
     public Product getProduct_Entity(String code){
         return productRepository.findByCodeIgnoreCase(code)
                 .orElseThrow(()-> new ProductNotFoundException(code));
+    }
+    @Transactional(readOnly = true)
+    private void validatePriceAndQuantity(Product product){
+        if(product.getPrice().compareTo(BigDecimal.ZERO) <= 0){
+            throw new PriceNotValidException(product.getPrice());
+        }
+        if(product.getQuantityAvailable().compareTo(BigDecimal.ZERO) < 0){
+            throw new QuantityNotValidException(product.getQuantityAvailable());
+        }
     }
 }

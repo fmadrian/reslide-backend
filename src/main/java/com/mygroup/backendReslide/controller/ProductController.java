@@ -3,6 +3,8 @@ package com.mygroup.backendReslide.controller;
 import com.mygroup.backendReslide.dto.ProductDto;
 import com.mygroup.backendReslide.dto.response.GenericResponse;
 import com.mygroup.backendReslide.exceptions.InternalError;
+import com.mygroup.backendReslide.exceptions.PriceNotValidException;
+import com.mygroup.backendReslide.exceptions.QuantityNotValidException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ProductBrandExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.ProductExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.MeasurementTypeNotFoundException;
@@ -32,7 +34,7 @@ public class ProductController {
             productService.create(productRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
         }catch (ProductExistsException | ProductBrandNotFoundException | ProductTypeNotFoundException
-                | MeasurementTypeNotFoundException e){
+                | PriceNotValidException | QuantityNotValidException | MeasurementTypeNotFoundException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
@@ -43,8 +45,9 @@ public class ProductController {
     public ResponseEntity<GenericResponse> update(@RequestBody ProductDto productRequest){
         try{
             productService.update(productRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
-        }catch (ProductExistsException | ProductNotFoundException | ProductBrandNotFoundException | ProductTypeNotFoundException
+            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Updated."), HttpStatus.CREATED);
+        }catch (ProductExistsException | PriceNotValidException | QuantityNotValidException |
+                ProductNotFoundException | ProductBrandNotFoundException | ProductTypeNotFoundException
                 | MeasurementTypeNotFoundException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -66,17 +69,17 @@ public class ProductController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    /*public ResponseEntity search(@RequestBody ProductDto productRequest){
+    @GetMapping("/get")
+    public ResponseEntity get(@RequestParam(required = false) Long id){
         try{
-            return new ResponseEntity<List<ProductDto>>(productService.search(productRequest),HttpStatus.OK);
-        }catch (ProductBrandNotFoundException | ProductTypeNotFoundException e){
+            return new ResponseEntity<ProductDto>(productService.getProduct(id),HttpStatus.OK);
+        }catch (ProductNotFoundException e ){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
-
+    }
     @GetMapping("/search-all")
     public ResponseEntity searchAll(){
         try{

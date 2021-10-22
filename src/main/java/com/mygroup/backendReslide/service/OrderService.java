@@ -1,12 +1,15 @@
 package com.mygroup.backendReslide.service;
 
+import com.mygroup.backendReslide.dto.request.OrderDetailRequest;
 import com.mygroup.backendReslide.dto.request.OrderRequest;
 import com.mygroup.backendReslide.dto.response.OrderResponse;
+import com.mygroup.backendReslide.exceptions.OrderDetailStatusException;
 import com.mygroup.backendReslide.exceptions.notFound.OrderNotFoundException;
 import com.mygroup.backendReslide.mapper.OrderMapper;
 import com.mygroup.backendReslide.model.Order;
 import com.mygroup.backendReslide.model.OrderDetail;
 import com.mygroup.backendReslide.model.Payment;
+import com.mygroup.backendReslide.model.status.OrderDetailStatus;
 import com.mygroup.backendReslide.model.status.OrderStatus;
 import com.mygroup.backendReslide.repository.OrderDetailRepository;
 import com.mygroup.backendReslide.repository.OrderRepository;
@@ -95,14 +98,6 @@ public class OrderService {
         orderRepository.save(order);
     }
     @Transactional(readOnly = true)
-    public List<OrderResponse> search(String start, String end) {
-        return orderRepository.findByDate(Instant.parse(start), Instant.parse(end))
-                .stream()
-                .map(orderMapper :: mapToDto)
-                .map(this :: hideOrderDetails) // Hide the invoice details.
-                .collect(Collectors.toList());
-    }
-    @Transactional(readOnly = true)
     public List<OrderResponse> searchByProvider(String start, String end, String providerCode) {
         return orderRepository.findByDateAndProviderCode(Instant.parse(start), Instant.parse(end),providerCode)
                 .stream()
@@ -115,8 +110,83 @@ public class OrderService {
         return orderMapper.mapToDto(orderRepository.findById(id)
                 .orElseThrow(()-> new OrderNotFoundException(id)));
     }
+    @Transactional
+    public void switchStatus(OrderRequest orderRequest){
+        // Find the order that will be modified.
+        Order order = orderRepository.findById(orderRequest.getId())
+                .orElseThrow(()->new OrderNotFoundException(orderRequest.getId()));
+        // Change the status
+        if(order.getStatus().equals(OrderStatus.ACTIVE)){
+            order.setStatus(OrderStatus.DELETED);
+        }else{
+            order.setStatus(OrderStatus.ACTIVE);
+        }
+        orderRepository.save(order);
+    }
+    // Delivers all the details in 1 order.
+    @Transactional
+    public void deliverAllProducts(OrderRequest orderRequest) {
+        // Search order
+        Order order = orderRepository.findById(orderRequest.getId())
+                .orElseThrow(() -> new OrderNotFoundException(orderRequest.getId()));
+        // Deliver all the undelivered products
+        // Get rid of the delivered and returned lines.
+        order.getDetails().stream()
+                .filter(orderDetail -> !orderDetail.getStatus().equals(OrderDetailStatus.DELIVERED))
+                .forEach(orderDetail -> {
+                    try {
+                        // Save the changes.
+                        orderDetailService.updateStatus(orderDetail, OrderDetailStatus.DELIVERED);
+                    } catch (OrderDetailStatusException e) {
+                        // Don't do anything if there is an exception.
+                    }
+                });
+    }
     private OrderResponse hideOrderDetails(OrderResponse orderResponse){
         orderResponse.setDetails(null);
         return orderResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> search(String start_date, String end_date,
+                          String start_expected_delivery_date, String end_expected_delivery_date,
+                          String start_actual_delivery_date, String end_actual_delivery_date,
+                          String providerCode) {
+
+        List<Order> orders = null;
+        if(start_expected_delivery_date != null && end_expected_delivery_date != null){
+            if(start_actual_delivery_date != null && end_actual_delivery_date != null){
+                // 1. Search with all the parameters.
+                orders = orderRepository.findOrderByDateExpectedDateActualDateProviderCode(
+                        Instant.parse(start_date),Instant.parse(end_date),
+                        Instant.parse(start_expected_delivery_date),Instant.parse(end_expected_delivery_date),
+                        Instant.parse(start_actual_delivery_date),Instant.parse(end_actual_delivery_date),providerCode
+                );
+            }else{
+                // 2. Search with code + date + expected delivery date + provider
+                orders = orderRepository.findOrderByDateExpectedDateProviderCode(
+                        Instant.parse(start_date),Instant.parse(end_date),
+                        Instant.parse(start_expected_delivery_date),Instant.parse(end_expected_delivery_date),
+                        providerCode
+                );
+            }
+        }else if(start_actual_delivery_date != null && end_actual_delivery_date != null){
+            // 3. Search with code + date + actual delivery date + provider
+            orders = orderRepository.findOrderByDateActualDateProviderCode(
+                    Instant.parse(start_date),Instant.parse(end_date),
+                    Instant.parse(start_actual_delivery_date),Instant.parse(end_actual_delivery_date)
+                    ,providerCode
+            );
+        }else{
+            // 4. Search by date and provider
+            orders = orderRepository.findByDateAndProviderCode(
+                    Instant.parse(start_date),Instant.parse(end_date),providerCode
+            );
+        }
+        // Return the orders.
+        return orders.stream()
+                .map(orderMapper::mapToDto)
+                .map(this::hideOrderDetails)
+                .collect(Collectors.toList());
     }
 }

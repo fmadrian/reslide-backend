@@ -47,7 +47,7 @@ public abstract class OrderMapper{
     }
     Individual getProvider(String code){ return individualService.getIndividual_Entity(code);}
     OrderStatus getOrderStatus(String status) {
-        if(status != null) {
+        if(status != null && status != "")  {
             return OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
         }
         return null;

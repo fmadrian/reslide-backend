@@ -7,6 +7,7 @@ import com.mygroup.backendReslide.exceptions.PaymentQuantityException;
 import com.mygroup.backendReslide.exceptions.ProductQuantityException;
 import com.mygroup.backendReslide.exceptions.notFound.InvoiceNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
+import com.mygroup.backendReslide.model.Invoice;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import com.mygroup.backendReslide.service.InvoiceService;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,7 @@ public class InvoiceController {
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody InvoiceRequest invoiceRequest){
         try{
-            invoiceService.create(invoiceRequest);
-            return new ResponseEntity("Created", HttpStatus.OK);
+            return new ResponseEntity(invoiceService.create(invoiceRequest), HttpStatus.OK);
         }catch (ProductNotFoundException | ProductQuantityException | DiscountNotValidException
         | PaymentQuantityException | PaymentExceedsDebtException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
@@ -39,7 +39,7 @@ public class InvoiceController {
     public ResponseEntity update(@RequestBody InvoiceRequest invoiceRequest){
         try{
             invoiceService.update(invoiceRequest);
-            return new ResponseEntity("Updated", HttpStatus.OK);
+            return new ResponseEntity(responseService.buildInformation("Updated"), HttpStatus.OK);
         }catch (InvoiceNotFoundException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -72,6 +72,15 @@ public class InvoiceController {
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/update/status")
+    public ResponseEntity switchStatus(@RequestBody InvoiceRequest invoiceRequest){
+        try{
+            invoiceService.switchStatus(invoiceRequest);
+            return new ResponseEntity(responseService.buildInformation("Status has been changed."), HttpStatus.OK);
+        }catch (InvoiceNotFoundException e){
+            return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
         }
     }
 }

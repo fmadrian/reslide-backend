@@ -5,6 +5,7 @@ import com.mygroup.backendReslide.dto.response.InvoiceResponse;
 import com.mygroup.backendReslide.exceptions.notFound.InvoiceNotFoundException;
 import com.mygroup.backendReslide.mapper.InvoiceMapper;
 import com.mygroup.backendReslide.model.*;
+import com.mygroup.backendReslide.model.status.InvoiceStatus;
 import com.mygroup.backendReslide.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,7 @@ public class InvoiceService {
     private final AuthService authService;
 
     @Transactional
-    public void create(InvoiceRequest invoiceDto) {
-
+    public InvoiceResponse create(InvoiceRequest invoiceDto) {
         // Maps the invoice dto to entity.
         Invoice invoice = invoiceMapper.mapToEntity(invoiceDto);
         invoice.getTransaction().setUser(authService.getCurrentUser());
@@ -85,8 +85,11 @@ public class InvoiceService {
         // Stores the payments if there is any.
         if(!transaction.getPayments().isEmpty())
             paymentRepository.saveAll(transaction.getPayments());
+        invoice.setStatus(InvoiceStatus.DELIVERED);
         // Save the invoice.
         invoiceRepository.save(invoice);
+        // Returns the invoice as response, so we can access it or update it without having to look for it.
+        return invoiceMapper.mapToDto(invoice);
     }
 
     @Transactional
@@ -127,7 +130,20 @@ public class InvoiceService {
                 .map(this :: hideInvoiceDetails) // Hide the invoice details.
                 .collect(Collectors.toList());
     }
-
+    @Transactional
+    public void switchStatus(InvoiceRequest invoiceRequest){
+        // Find the invoice.
+        Invoice invoice = invoiceRepository.findById(invoiceRequest.getId())
+                .orElseThrow(()->new InvoiceNotFoundException(invoiceRequest.getId()));
+        // Change the status.
+        if(invoice.getStatus().equals(InvoiceStatus.DELETED)){
+            invoice.setStatus(InvoiceStatus.DELIVERED);
+        }else{
+            invoice.setStatus(InvoiceStatus.DELETED);
+        }
+        // Save the change in the database.
+        invoiceRepository.save(invoice);
+    }
 
     private InvoiceResponse hideInvoiceDetails(InvoiceResponse invoiceResponse){
         invoiceResponse.setDetails(null);

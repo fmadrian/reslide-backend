@@ -72,7 +72,10 @@ public abstract class InvoiceMapper {
         return transactionMapper.mapToDto(transaction);
     }
     InvoiceStatus getInvoiceStatus(String status) {
-        return InvoiceStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        if(status != null && status != "") {
+            return InvoiceStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        }
+        return null;
     }
 
 }

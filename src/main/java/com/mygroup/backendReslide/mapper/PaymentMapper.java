@@ -1,6 +1,7 @@
 package com.mygroup.backendReslide.mapper;
 
 import com.mygroup.backendReslide.dto.PaymentDto;
+import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.model.Payment;
 import com.mygroup.backendReslide.model.PaymentMethod;
 import com.mygroup.backendReslide.model.User;
@@ -29,8 +30,12 @@ public abstract class PaymentMapper {
 
     // Services can't be used by the Impl class
     // User service function can't be used by the Impl class
+    // Mappers can't throw EXCEPTIONS it provokes a UnexpectedRollbackException
     User getUser(String username){
-        return userService.getUser_Entity(username);
+        if(username != null && !username.isEmpty()){
+            return userService.getUser_Entity(username);
+        }
+        return null;
     }
     PaymentMethod getPaymentMethod(String name){return paymentMethodService.getPaymentMethod_Entity(name);}
 

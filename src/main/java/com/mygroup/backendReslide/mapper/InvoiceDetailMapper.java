@@ -41,7 +41,10 @@ public abstract class InvoiceDetailMapper {
         return discountMapper.mapToDto(discount);
     }
     InvoiceDetailStatus getInvoiceDetailStatus(String status){
-        return InvoiceDetailStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        if(status != null && status != "") {
+            return InvoiceDetailStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        }
+        return null;
     }
     Product getProduct(String code){
         return productService.getProduct_Entity(code);

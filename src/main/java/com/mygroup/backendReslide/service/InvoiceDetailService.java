@@ -19,6 +19,7 @@ import com.mygroup.backendReslide.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,7 +51,8 @@ public class InvoiceDetailService {
         }
         // Maps the request to entity to add the values
         InvoiceDetail invoiceDetail = invoiceDetailMapper.mapToEntity(invoiceDetailRequest);
-
+        // Setting initial values
+        invoiceDetail.setPriceByUnit(product.getPrice());
         // Calculating the amounts.
         invoiceDetail.setSubtotal(product.getPrice().multiply(invoiceDetail.getQuantity()).setScale(scaleUsed, RoundingMode.HALF_UP));
         // Tax exemption
@@ -221,18 +223,18 @@ public class InvoiceDetailService {
         recalculateInvoice(invoice);
     }
     @Transactional
-    public void delete(InvoiceDetailRequest invoiceDetailRequest){
+    public void delete(Long invoiceId, Long detailId){
         // Searches the invoice detail that will be deleted.
-        InvoiceDetail invoiceDetail = invoiceDetailRepository.findById(invoiceDetailRequest.getId())
-                .orElseThrow(()->new InvoiceDetailNotFoundException(invoiceDetailRequest.getId()));
+        InvoiceDetail invoiceDetail = invoiceDetailRepository.findById(detailId)
+                .orElseThrow(()->new InvoiceDetailNotFoundException(detailId));
         // Searches the invoice.
-        Invoice invoice = invoiceRepository.findById(invoiceDetailRequest.getInvoiceId())
-                .orElseThrow(()-> new InvoiceNotFoundException(invoiceDetailRequest.getInvoiceId()));
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(()-> new InvoiceNotFoundException(invoiceId));
         // Checks if the invoice has the detail that we want to delete.
         if(invoice.getDetails().stream().noneMatch(invoiceDetailFound -> invoiceDetailFound.getId().equals(invoiceDetail.getId()))){
-            throw new InvoiceAndDetailDoNotMatchException(invoiceDetailRequest.getId(), invoiceDetailRequest.getInvoiceId());
+            throw new InvoiceAndDetailDoNotMatchException(detailId, invoiceId);
         }
-        // Deletes the discount, the detail.
+        // Deletes the discount, then the detail.
         if(invoiceDetail.getDiscountApplied() != null){
             discountRepository.delete(invoiceDetail.getDiscountApplied());
         }
@@ -240,7 +242,7 @@ public class InvoiceDetailService {
         Product product = invoiceDetail.getProduct();
         product.setQuantityAvailable(product.getQuantityAvailable().add(invoiceDetail.getQuantity()));
 
-        // Delete it from database and remove it from the detail list (so the new values can be calculated).
+        // Deletes it from database and remove it from the detail list (so the new values can be calculated).
         invoiceDetailRepository.delete(invoiceDetail);
         invoice.getDetails().remove(invoiceDetail);
         recalculateInvoice(invoice);

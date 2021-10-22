@@ -22,7 +22,7 @@ public class InvoiceDetailController {
     private final InvoiceDetailService invoiceDetailService;
     private final GenericResponseService responseService;
 
-    @GetMapping("/validate")
+    @PostMapping("/validate")
     public ResponseEntity validate(@RequestBody InvoiceDetailRequest invoiceDetailRequest){
         try{
             return new ResponseEntity(invoiceDetailService.validatesRequest(invoiceDetailRequest), HttpStatus.OK);
@@ -36,12 +36,15 @@ public class InvoiceDetailController {
     }
 
 
-    @DeleteMapping("/delete")
-    public ResponseEntity delete(@RequestBody InvoiceDetailRequest invoiceDetailRequest){
+    @DeleteMapping("/delete/{invoiceId}/{detailId}")
+    public ResponseEntity delete(@PathVariable Long invoiceId, @PathVariable Long detailId){
         try{
-            invoiceDetailService.delete(invoiceDetailRequest);
-            return new ResponseEntity("Deleted", HttpStatus.OK);
-        }catch (Exception e){
+            invoiceDetailService.delete(invoiceId, detailId);
+            return new ResponseEntity(responseService.buildInformation("Deleted"), HttpStatus.OK);
+        }catch (InvoiceDetailNotFoundException | InvoiceNotFoundException | InvoiceAndDetailDoNotMatchException e){
+            return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
+        }
+        catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -74,7 +77,7 @@ public class InvoiceDetailController {
     public ResponseEntity create(@RequestBody InvoiceDetailRequest invoiceDetailRequest){
         try{
             invoiceDetailService.create(invoiceDetailRequest);
-            return new ResponseEntity("Created", HttpStatus.CREATED);
+            return new ResponseEntity(responseService.buildInformation("Created"), HttpStatus.CREATED);
         }catch (ProductQuantityException | InvoiceNotFoundException | DiscountNotValidException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){

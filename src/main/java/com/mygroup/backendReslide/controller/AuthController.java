@@ -10,6 +10,7 @@ import com.mygroup.backendReslide.exceptions.InternalError;
 import com.mygroup.backendReslide.exceptions.InvalidRefreshTokenException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
+import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
 import com.mygroup.backendReslide.service.AuthService;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController // REST
 @RequestMapping("/api/auth") // URL
@@ -33,8 +36,8 @@ public class AuthController {
         try {
             authService.createUser(userRequest);
             return new ResponseEntity(responseService.buildInformation("User created successfully."), HttpStatus.OK);
-        }catch (UsernameExistsException | IndividualCodeExistsException e){
-            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+        }catch (UsernameExistsException | IndividualCodeExistsException | IndividualTypeNotFoundException e){
+            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             System.out.println(e);
             return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -66,7 +69,7 @@ public class AuthController {
 
     }
     @PostMapping("/refresh/token")
-    public ResponseEntity refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+    public ResponseEntity refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest){
         try {
             AuthenticationResponse response = authService.refreshToken(refreshTokenRequest);
             return new ResponseEntity<AuthenticationResponse>(response, HttpStatus.OK);
@@ -76,8 +79,8 @@ public class AuthController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @DeleteMapping("/logout")
-    public ResponseEntity logout(@RequestBody LogoutRequest logoutRequest){
+    @PostMapping("/logout")
+    public ResponseEntity logout(@Valid @RequestBody LogoutRequest logoutRequest){
         try{
             authService.logout(logoutRequest);
             return new ResponseEntity(responseService.buildInformation("User logged out."), HttpStatus.OK);

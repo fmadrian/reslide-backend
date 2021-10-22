@@ -55,7 +55,7 @@ public class ProductTypeController {
     }
     // Searches every active product type.
     @GetMapping("/search")
-    public ResponseEntity getByType(@PathVariable String type){
+    public ResponseEntity getByType(@RequestParam String type){
         try{
             return new ResponseEntity(productTypeService.search(type), HttpStatus.OK);
         }catch (ProductTypeNotFoundException e) {

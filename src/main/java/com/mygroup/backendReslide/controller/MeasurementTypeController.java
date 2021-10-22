@@ -53,7 +53,7 @@ public class MeasurementTypeController {
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Deactivated."), HttpStatus.OK);
         } catch (MeasurementTypeNotFoundException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
-        } catch (Exception e) {
+        } catch (Exception e) {     
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }

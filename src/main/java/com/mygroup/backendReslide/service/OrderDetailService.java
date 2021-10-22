@@ -123,6 +123,33 @@ public class OrderDetailService {
         orderDetailRepository.save(currentDetail);
     }
     @Transactional
+    public void updateStatus(OrderDetail orderDetail, OrderDetailStatus newStatus){
+
+        OrderDetailStatus currentStatus = orderDetail.getStatus();
+        // Updates the detail and saves the quantity
+        Product product = orderDetail.getProduct();
+        if(currentStatus.equals(OrderDetailStatus.NOT_DELIVERED) || currentStatus.equals(OrderDetailStatus.RETURNED)){
+            // Adds product to stock
+            if(newStatus.equals(OrderDetailStatus.DELIVERED)){
+                product.setQuantityAvailable(product.getQuantityAvailable().add(orderDetail.getQuantity()));
+                productRepository.save(product);
+            }else{
+                throw new OrderDetailStatusException(orderDetail.getId());
+            }
+        }
+        else if(currentStatus.equals(OrderDetailStatus.DELIVERED)){
+            // Returns product from stock
+            if(newStatus.equals(OrderDetailStatus.RETURNED)){
+                product.setQuantityAvailable(product.getQuantityAvailable().subtract(orderDetail.getQuantity()));
+                productRepository.save(product);
+            }else{
+                throw new OrderDetailStatusException(orderDetail.getId());
+            }
+        }
+        orderDetail.setStatus(newStatus);
+        orderDetailRepository.save(orderDetail);
+    }
+    @Transactional
     public void create(OrderDetailRequest orderDetailRequest){
         // Validates the order detail.
         OrderDetail orderDetail = validateOrderDetail(orderDetailMapper.mapToEntity(orderDetailRequest));
@@ -136,20 +163,20 @@ public class OrderDetailService {
     }
 
     @Transactional
-    public void delete(OrderDetailRequest orderDetailRequest){
+    public void delete(Long orderId, Long detailId){
         // Search the order detail that will be updated.
-        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailRequest.getId())
-                .orElseThrow(()-> new OrderDetailNotFoundException(orderDetailRequest.getId()));
+        OrderDetail orderDetail = orderDetailRepository.findById(detailId)
+                .orElseThrow(()-> new OrderDetailNotFoundException(detailId));
         // Search the order.
-        Order order = orderRepository.findById(orderDetailRequest.getOrderId())
-                .orElseThrow(()-> new OrderNotFoundException(orderDetailRequest.getOrderId()));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new OrderNotFoundException(orderId));
         // Check whether the detail corresponds to the order.
         if(!order.getDetails().contains(orderDetail)){
-            throw new OrderAndDetailDoNotMatchException(orderDetailRequest.getOrderId(), orderDetailRequest.getId());
+            throw new OrderAndDetailDoNotMatchException(orderId, detailId);
         }
         // Don't delete it the item has been delivered.
         if(orderDetail.getStatus().equals(OrderDetailStatus.DELIVERED)){
-            throw new OrderDetailDeleteException(orderDetailRequest.getOrderId());
+            throw new OrderDetailDeleteException(orderId);
         }else{
             order.getDetails().remove(orderDetail);
             orderDetailRepository.delete(orderDetail);

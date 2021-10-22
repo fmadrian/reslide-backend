@@ -58,10 +58,10 @@ public class OrderDetailController {
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @DeleteMapping("/delete")
-    public ResponseEntity delete(@RequestBody OrderDetailRequest orderDetailRequest){
+    @DeleteMapping("/delete/{orderId}/{detailId}")
+    public ResponseEntity delete(@PathVariable Long orderId, @PathVariable Long detailId){
         try{
-            orderDetailService.delete(orderDetailRequest);
+            orderDetailService.delete(orderId, detailId);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Deleted."), HttpStatus.OK);
         }catch (OrderDetailNotFoundException | OrderNotFoundException | ProductNotFoundException |
                 OrderDetailDeleteException | PaymentQuantityException | PaymentExceedsDebtException e){

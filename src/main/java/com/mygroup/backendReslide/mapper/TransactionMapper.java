@@ -53,9 +53,14 @@ public abstract class TransactionMapper {
         return null;
     }
 
-    // User service function can't be used by the Impl class
+    // User service function can't be used by the MappersImpl class
+    // Can return null because we need it when the user is assigned from the API
+    // Mappers can't throw EXCEPTIONS it provokes a UnexpectedRollbackException
     User getUser(String username){
-        return userService.getUser_Entity(username);
+        if(username != null && !username.isEmpty()){
+            return userService.getUser_Entity(username);
+        }
+        return null;
     }
 }
 

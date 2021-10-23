@@ -55,6 +55,17 @@ public class AuthController {
             return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/get/user")
+    public ResponseEntity getUserInformation(){
+        try{
+            return new ResponseEntity(authService.getUserInformation(), HttpStatus.OK);
+        }catch (UsernameNotFoundException e){
+            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest){
         try {

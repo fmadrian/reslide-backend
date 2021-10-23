@@ -5,6 +5,7 @@ import com.mygroup.backendReslide.dto.request.LogoutRequest;
 import com.mygroup.backendReslide.dto.request.RefreshTokenRequest;
 import com.mygroup.backendReslide.dto.request.UserRequest;
 import com.mygroup.backendReslide.dto.response.AuthenticationResponse;
+import com.mygroup.backendReslide.dto.response.UserResponse;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
@@ -79,7 +80,7 @@ public class AuthService {
         && !user.getUsername().equals(userRequest.getUsername())){
             throw new UsernameExistsException(userRequest.getUsername());
         }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode()).isPresent()
-        && !user.getIndividual().getName().equals(userRequest.getIndividual().getCode())){
+        && !user.getIndividual().getCode().equals(userRequest.getIndividual().getCode())){
             throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
         }
         // Do the modifications.
@@ -153,6 +154,10 @@ public class AuthService {
                 .orElseThrow(()-> new UserNotFoundException(principal.getUsername()));
 
         return user;
+    }
+    @Transactional(readOnly = true)
+    public UserResponse getUserInformation(){
+        return userMapper.mapToDto(this.getCurrentUser());
     }
     public boolean isLoggedIn(){
         // Get the authentication object from the security context holder

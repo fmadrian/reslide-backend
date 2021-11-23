@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/measurement/type/")
+@RequestMapping("/api/measurement-type/")
 @AllArgsConstructor
 public class MeasurementTypeController {
 

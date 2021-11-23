@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/product/brand")
@@ -23,10 +25,9 @@ public class ProductBrandController {
     private final GenericResponseService responseService;
 
     @PostMapping("/create")
-    public ResponseEntity<GenericResponse> create(@RequestBody ProductBrandDto productBrandDto){
+    public ResponseEntity create(@RequestBody ProductBrandDto productBrandDto){
         try{
-            productBrandService.create(productBrandDto);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(productBrandService.create(productBrandDto), HttpStatus.OK);
         }catch (ProductBrandNotFoundException | ProductBrandExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -41,6 +42,7 @@ public class ProductBrandController {
         } catch (ProductBrandNotFoundException | ProductBrandExistsException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -64,5 +66,14 @@ public class ProductBrandController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @GetMapping("/get/{id}")
+    public ResponseEntity get(@PathVariable("id") Long id){
+        try{
+            return new ResponseEntity(productBrandService.get(id), HttpStatus.OK);
+        } catch (ProductBrandNotFoundException e) {
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

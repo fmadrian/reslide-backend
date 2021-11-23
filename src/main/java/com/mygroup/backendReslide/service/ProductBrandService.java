@@ -21,14 +21,15 @@ public class ProductBrandService {
     private final ProductBrandMapper productBrandMapper;
 
     @Transactional
-    public void create(ProductBrandDto productBrandDto) {
+    public ProductBrandDto create(ProductBrandDto productBrandDto) {
         if(productBrandRepository.findByNameIgnoreCase(productBrandDto.getName()).isPresent()){
             throw new ProductBrandExistsException(productBrandDto.getName());
         }
         // Using the mapper instead of doing setters and getters.
         ProductBrand productBrand = productBrandMapper.mapToEntity(productBrandDto);
-        // Store it.
-        productBrandRepository.save(productBrand);
+        // Store it and return it.
+        productBrand = productBrandRepository.save(productBrand);
+        return productBrandMapper.mapToDto(productBrand);
     }
     @Transactional
     public void update(ProductBrandDto productBrandDto) {
@@ -68,5 +69,10 @@ public class ProductBrandService {
                 .map(productBrandMapper::mapToDto)
                 .collect(Collectors.toList());
 
+    }
+
+    public ProductBrandDto get(Long id) {
+        ProductBrand productBrand = productBrandRepository.findById(id).orElseThrow(()-> new ProductBrandNotFoundException(id));
+        return productBrandMapper.mapToDto(productBrand);
     }
 }

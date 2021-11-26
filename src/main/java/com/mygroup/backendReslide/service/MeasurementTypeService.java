@@ -20,13 +20,15 @@ public class MeasurementTypeService {
     private final MeasurementTypeRepository measurementTypeRepository;
     private final MeasurementTypeMapper measurementTypeMapper;
     @Transactional
-    public void create(MeasurementTypeDto measurementTypeRequest){
+    public MeasurementTypeDto create(MeasurementTypeDto measurementTypeRequest){
         // If it doesn't exist, store it to the database.
         if(measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName()).isPresent()){
             throw new MeasurementTypeExistsException(measurementTypeRequest.getName());
         }
         MeasurementType measurementType = measurementTypeMapper.mapToEntity(measurementTypeRequest);
-        measurementTypeRepository.save(measurementType);
+        // Store in the database and return it
+        measurementType = measurementTypeRepository.save(measurementType);
+        return measurementTypeMapper.mapToDto(measurementType);
     }
     @Transactional
     public void update(MeasurementTypeDto measurementTypeRequest){
@@ -72,5 +74,12 @@ public class MeasurementTypeService {
                     .map(measurementTypeMapper::mapToDto)
                     .collect(Collectors.toList());
         }
+    }
+    @Transactional(readOnly = true)
+    public MeasurementTypeDto get(Long id){
+        // Find it by id and return it as DTO.
+        return measurementTypeMapper.mapToDto(
+                measurementTypeRepository.findById(id).orElseThrow(()-> new MeasurementTypeNotFoundException(id))
+        );
     }
 }

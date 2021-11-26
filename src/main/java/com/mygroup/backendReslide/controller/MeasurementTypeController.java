@@ -25,8 +25,7 @@ public class MeasurementTypeController {
     @PostMapping("/create")
     public ResponseEntity<GenericResponse> create(@RequestBody MeasurementTypeDto measurementTypeRequest){
         try{
-            measurementTypeService.create(measurementTypeRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(measurementTypeService.create(measurementTypeRequest), HttpStatus.CREATED);
         }catch (MeasurementTypeNotFoundException | MeasurementTypeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -62,6 +61,17 @@ public class MeasurementTypeController {
     public ResponseEntity search(@RequestParam(required = false) String text){
         try {
             return new ResponseEntity<List<MeasurementTypeDto>>(measurementTypeService.search(text), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/get/{id}")
+    public ResponseEntity get(@PathVariable Long id){
+        try{
+            return new ResponseEntity(measurementTypeService.get(id), HttpStatus.OK);
+        } catch (MeasurementTypeNotFoundException e) {
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);

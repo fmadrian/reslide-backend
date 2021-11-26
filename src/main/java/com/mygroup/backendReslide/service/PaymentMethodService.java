@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.model.PaymentMethod;
 import com.mygroup.backendReslide.repository.PaymentMethodRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,14 +19,18 @@ public class PaymentMethodService {
 
     private final PaymentMethodMapper paymentMethodMapper;
     private final PaymentMethodRepository paymentMethodRepository;
-
-    public void create(PaymentMethodDto paymentTypeRequest) {
+    @Transactional
+    public PaymentMethodDto create(PaymentMethodDto paymentTypeRequest) {
         if(paymentMethodRepository.findByNameIgnoreCase(paymentTypeRequest.getName()).isPresent()){
             throw new PaymentMethodExistsException(paymentTypeRequest.getName());
         }
-        paymentMethodRepository.save(paymentMethodMapper.mapToEntity(paymentTypeRequest));
+        PaymentMethod paymentMethod =paymentMethodMapper.mapToEntity(paymentTypeRequest);
+        // Enabled by default.
+        paymentMethod.setEnabled(true);
+        paymentMethod = paymentMethodRepository.save(paymentMethod);
+        return paymentMethodMapper.mapToDto(paymentMethod);
     }
-
+    @Transactional
     public void update(PaymentMethodDto paymentTypeRequest) {
         // Find the payment method.
         PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentTypeRequest.getId())
@@ -35,9 +40,12 @@ public class PaymentMethodService {
            && !paymentTypeRequest.getName().equals(paymentMethod.getName())){
             throw new PaymentMethodExistsException(paymentTypeRequest.getName());
         }
+        paymentMethod.setName(paymentTypeRequest.getName());
+        paymentMethod.setNotes(paymentTypeRequest.getNotes());
+        paymentMethodRepository.save(paymentMethod);
     }
 
-
+    @Transactional(readOnly = true)
     public List<PaymentMethodDto> search(String name) {
         // If name is null, returns every active method.
         if(name == null){
@@ -52,16 +60,23 @@ public class PaymentMethodService {
                     .collect(Collectors.toList());
         }
     }
-
+    @Transactional(readOnly = true)
     public PaymentMethodDto getPaymentMethod(String name){
         return paymentMethodMapper.mapToDto(
                 paymentMethodRepository.findByNameIgnoreCase(name)
                 .orElseThrow(()->new PaymentMethodNotFoundException(name))
         );
     }
-
+    @Transactional(readOnly = true)
     public PaymentMethod getPaymentMethod_Entity(String name) {
         return paymentMethodRepository.findByNameIgnoreCase(name)
                 .orElseThrow(()->new PaymentMethodNotFoundException(name));
+    }
+
+    public PaymentMethodDto get(Long id) {
+        // Search the payment method, map it to DTO and then return it
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(id)
+                                    .orElseThrow(()-> new PaymentMethodNotFoundException(id));
+        return paymentMethodMapper.mapToDto(paymentMethod);
     }
 }

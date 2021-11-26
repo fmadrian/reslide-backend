@@ -22,10 +22,9 @@ public class PaymentMethodController {
     private final GenericResponseService responseService;
 
     @PostMapping("/create")
-    public ResponseEntity<GenericResponse> create(@RequestBody PaymentMethodDto paymentMethodRequest){
+    public ResponseEntity create(@RequestBody PaymentMethodDto paymentMethodRequest){
         try{
-            paymentMethodService.create(paymentMethodRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(paymentMethodService.create(paymentMethodRequest), HttpStatus.CREATED);
         }catch (PaymentMethodExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -49,6 +48,17 @@ public class PaymentMethodController {
     public ResponseEntity search(@RequestParam(required = false) String type){
         try{
             return new ResponseEntity<List<PaymentMethodDto>>(paymentMethodService.search(type), HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/get/{id}")
+    public ResponseEntity get(@PathVariable(name = "id") Long id){
+        try{
+            return new ResponseEntity(paymentMethodService.get(id), HttpStatus.OK);
+        }catch (PaymentMethodNotFoundException e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);

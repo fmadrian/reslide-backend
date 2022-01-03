@@ -31,6 +31,7 @@ public abstract class TransactionMapper {
     public abstract Transaction mapToEntity(TransactionDto transactionDto);
 
     @Mapping(target = "username", expression = "java(transaction.getUser().getUsername())")
+    @Mapping(target = "fullname", expression = "java(transaction.getUser().getIndividual().getName())")
     @Mapping(target = "payments", expression = "java(mapPaymentsToDto(transaction.getPayments()))")
     @Mapping(target = "date", expression = "java(transaction.getDate().toString())")
     public abstract TransactionDto mapToDto(Transaction transaction);

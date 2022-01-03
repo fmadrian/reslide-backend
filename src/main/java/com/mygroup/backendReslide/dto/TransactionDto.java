@@ -13,6 +13,7 @@ import java.util.List;
 public class TransactionDto {
     private Long id;
     private String username;
+    private String fullname; // User's full name (used when printing transactions).
     private String date;
     private String notes;
     private List<PaymentDto> payments;

@@ -188,4 +188,14 @@ public class ProductService {
             throw new QuantityNotValidException(product.getQuantityAvailable());
         }
     }
+    @Transactional(readOnly = true)
+    public List<ProductDto> searchLessOrEqual(BigDecimal quantityAvailable) {
+        // Returns a list of products that have less
+        List<ProductDto> products =
+        productRepository.findByQuantityAvailableLessThanEqualAndProductStatus(quantityAvailable, ProductStatus.ACTIVE)
+                .stream()
+                .map(this.productMapper::mapToDto)
+                .collect(Collectors.toList());
+        return products;
+    }
 }

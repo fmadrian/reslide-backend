@@ -7,6 +7,7 @@ import com.mygroup.backendReslide.model.status.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 @Repository
@@ -47,4 +48,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Name and code.
     List<Product> findByCodeIgnoreCaseContainsAndNameIgnoreCaseContainsOrderByCodeDesc(String code, String name);
 
+    List<Product> findByQuantityAvailableLessThanEqualAndProductStatus(BigDecimal quantityAvailable, ProductStatus productStatus);
 }

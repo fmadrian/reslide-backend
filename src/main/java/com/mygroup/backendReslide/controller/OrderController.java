@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+
 @RestController
 @RequestMapping("/api/order")
 @AllArgsConstructor
@@ -98,6 +100,15 @@ public class OrderController {
             return new ResponseEntity(responseService.buildInformation("Order status has been changed."), HttpStatus.OK);
         }catch (OrderNotFoundException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/search/after-estimated-delivery-date")
+    public ResponseEntity searchAfterEstimatedDeliveryDate(@RequestParam()String estimatedDeliveryDate ){
+        try{
+            return new ResponseEntity(orderService.searchAfterEstimatedDeliveryDate(estimatedDeliveryDate), HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -189,4 +189,13 @@ public class OrderService {
                 .map(this::hideOrderDetails)
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public List<OrderResponse> searchAfterEstimatedDeliveryDate(String estimatedDeliveryDate) {
+        return orderRepository.
+                findByExpectedDeliveryDateGreaterThanEqualAndStatus(Instant.parse(estimatedDeliveryDate), OrderStatus.ACTIVE)
+                .stream()
+                .map(orderMapper::mapToDto)
+                .map(this::hideOrderDetails)
+                .collect(Collectors.toList());
+    }
 }

@@ -2,6 +2,7 @@ package com.mygroup.backendReslide.repository;
 
 
 import com.mygroup.backendReslide.model.Order;
+import com.mygroup.backendReslide.model.status.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,4 +47,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "SELECT * FROM \"fn_findOrderByTransactionId\"(:transactionId)",
             nativeQuery = true)
     Optional<Order> findByTransactionId(@Param("transactionId") Long transactionId);
+
+    List<Order> findByExpectedDeliveryDateGreaterThanEqualAndStatus(Instant expectedDeliveryDate, OrderStatus status);
 }

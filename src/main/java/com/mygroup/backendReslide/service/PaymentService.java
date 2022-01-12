@@ -251,7 +251,7 @@ public class PaymentService {
             return this.getOrderPaymentsByDate(startDate, endDate);
         }else if(type.equals("invoice")){
             return this.getInvoicePaymentsByDate(startDate, endDate);
-        }else if(type.equals("both")){
+        }else if(type.equals("all")){
             // Call both get invoice methods, join the lists and sort them by date.;
             List<PaymentDto> orderPayments = this.getOrderPaymentsByDate(startDate, endDate);
             List<PaymentDto> invoicePayments = this.getInvoicePaymentsByDate(startDate, endDate);

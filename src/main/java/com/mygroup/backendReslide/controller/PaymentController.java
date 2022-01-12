@@ -17,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+import java.time.format.DateTimeParseException;
+
 @RestController
 @RequestMapping("/api/payment")
 @AllArgsConstructor
@@ -54,7 +57,18 @@ public class PaymentController {
         try{
             paymentService.overturn(paymentRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Updated."), HttpStatus.OK);
-        }catch (TransactionDoesNotMatchException | TransactionNotFoundException | PaymentAndTransactionDoNotMatch e){
+        }catch (TransactionDoesNotMatchException| PaymentOverturnedException | TransactionNotFoundException | PaymentAndTransactionDoNotMatch e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/search/by-date")
+    public ResponseEntity<GenericResponse> searchPaymentsByDate(@RequestParam String type, @RequestParam String start, @RequestParam String end){
+        try{
+            return new ResponseEntity(paymentService.getPaymentsByDate(type, start, end), HttpStatus.OK);
+        }catch (TransactionDoesNotMatchException| DateTimeParseException | TransactionNotFoundException | PaymentAndTransactionDoNotMatch e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();

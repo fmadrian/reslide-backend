@@ -48,5 +48,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             nativeQuery = true)
     Optional<Order> findByTransactionId(@Param("transactionId") Long transactionId);
 
+    @Query(value = "SELECT * FROM \"fn_findOrderByPaymentId\"(:payment_id)",nativeQuery = true)
+    Optional<Order> findByPaymentId(@Param("payment_id") Long payment_id);
+
     List<Order> findByExpectedDeliveryDateGreaterThanEqualAndStatus(Instant expectedDeliveryDate, OrderStatus status);
+
 }

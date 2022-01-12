@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -242,4 +245,70 @@ public class PaymentService {
             throw new PaymentAndTransactionDoNotMatch(payment.getId(), transaction.getId());
         }
     }
+    @Transactional(readOnly = true)
+    public List<PaymentDto> getPaymentsByDate(String type, String startDate, String endDate) {
+        if(type.equals("order")){
+            return this.getOrderPaymentsByDate(startDate, endDate);
+        }else if(type.equals("invoice")){
+            return this.getInvoicePaymentsByDate(startDate, endDate);
+        }else if(type.equals("both")){
+            // Call both get invoice methods, join the lists and sort them by date.;
+            List<PaymentDto> orderPayments = this.getOrderPaymentsByDate(startDate, endDate);
+            List<PaymentDto> invoicePayments = this.getInvoicePaymentsByDate(startDate, endDate);
+            List<PaymentDto> result = new ArrayList<PaymentDto>();
+            result.addAll(orderPayments);
+            result.addAll(invoicePayments);
+            result = result.stream().sorted(Comparator.comparing(payment -> Instant.parse(payment.getDate()))).collect(Collectors.toList());
+            return result;
+        }
+        else{
+            return null;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    private List<PaymentDto> getOrderPaymentsByDate(String startDate, String endDate) {
+        // 1. Search the payments made in between the dates.
+        // 2. Map them to DTO's (to send them back to the client).
+        // 3. Search which payments belong to orders (link a payment with an order)
+        // 4. Add the order id to the respective payment dto and return it.
+        // 5. Make it a list and return it.
+        List<PaymentDto> results = paymentRepository.findByDateBetween(Instant.parse(startDate), Instant.parse(endDate))
+                                .stream()
+                                .map(paymentMapper::mapToDto)
+                                .map(paymentDto -> {
+                                    // 3. Search which payments belong to orders (link a payment with an order)
+                                    Order order = orderRepository.findByPaymentId(paymentDto.getId()).orElse(null);
+                                    if(order != null) {
+                                        // 4. Add the order id to the respective payment dto and return it.
+                                        paymentDto.setOrderId(order.getId());
+                                        return paymentDto;
+                                    }return null;
+                                }).filter(paymentDto -> paymentDto != null)
+                                .collect(Collectors.toList());
+        return results;
+    }
+    @Transactional(readOnly = true)
+    private List<PaymentDto> getInvoicePaymentsByDate(String startDate, String endDate) {
+        // 1. Search the payments made in between the dates.
+        // 2. Map them to DTO's (to send them back to the client).
+        // 3. Search which payments belong to invoices (link a payment with an order)
+        // 4. Add the invoice id to the respective payment dto and return it.
+        // 5. Make it a list and return it.
+        List<PaymentDto> results = paymentRepository.findByDateBetween(Instant.parse(startDate), Instant.parse(endDate))
+                .stream()
+                .map(paymentMapper::mapToDto)
+                .map(paymentDto -> {
+                    // 3. Search which payments belong to orders (link a payment with an order)
+                    Invoice invoice = invoiceRepository.findByPaymentId(paymentDto.getId()).orElse(null);
+                    if(invoice != null) {
+                        // 4. Add the order id to the respective payment dto and return it.
+                        paymentDto.setInvoiceId(invoice.getId());
+                        return paymentDto;
+                    }return null;
+                }).filter(paymentDto -> paymentDto != null)
+                .collect(Collectors.toList());
+        return results;
+    }
+
 }

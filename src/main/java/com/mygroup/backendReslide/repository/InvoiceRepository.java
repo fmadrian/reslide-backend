@@ -1,6 +1,7 @@
 package com.mygroup.backendReslide.repository;
 
 import com.mygroup.backendReslide.model.Invoice;
+import com.mygroup.backendReslide.model.Order;
 import com.mygroup.backendReslide.model.Transaction;
 import com.mygroup.backendReslide.model.status.InvoiceStatus;
 import com.mygroup.backendReslide.model.status.ProductStatus;
@@ -28,5 +29,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     @Query(value = "SELECT * FROM \"fn_findInvoiceByTransactionId\"(:transactionId)",
             nativeQuery = true)
     Optional<Invoice> findByTransactionId(@Param("transactionId") Long transactionId);
+
+    @Query(value = "SELECT * FROM \"fn_findInvoiceByPaymentId\"(:payment_id)",nativeQuery = true)
+    Optional<Invoice> findByPaymentId(@Param("payment_id") Long payment_id);
 
 }

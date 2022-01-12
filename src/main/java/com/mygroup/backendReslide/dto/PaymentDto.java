@@ -13,6 +13,8 @@ import java.time.Instant;
 public class PaymentDto {
     private Long id;
     private Long transactionId;
+    private Long orderId;
+    private Long invoiceId;
 
     private String username;
     private String date;

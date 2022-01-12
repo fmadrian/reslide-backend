@@ -24,6 +24,8 @@ public abstract class PaymentMapper {
 
     @Mapping(target = "username", expression = "java(payment.getUser().getUsername())")
     @Mapping(target = "transactionId", ignore = true)
+    @Mapping(target = "orderId", ignore = true)
+    @Mapping(target = "invoiceId", ignore = true)
     @Mapping(target = "paymentMethod", expression = "java(payment.getPaymentMethod().getName())")
     @Mapping(target = "date", expression = "java(payment.getDate().toString())")
     public abstract PaymentDto mapToDto(Payment payment);

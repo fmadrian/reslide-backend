@@ -22,7 +22,7 @@ public class MeasurementTypeService {
     @Transactional
     public MeasurementTypeDto create(MeasurementTypeDto measurementTypeRequest){
         // If it doesn't exist, store it to the database.
-        if(measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName()).isPresent()){
+        if(measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName().trim()).isPresent()){
             throw new MeasurementTypeExistsException(measurementTypeRequest.getName());
         }
         MeasurementType measurementType = measurementTypeMapper.mapToEntity(measurementTypeRequest);
@@ -36,7 +36,7 @@ public class MeasurementTypeService {
                 .orElseThrow(()->new MeasurementTypeNotFoundException(measurementTypeRequest.getId()));
 
         // Check if the type already exists.
-        if( measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName()).isPresent()
+        if(measurementTypeRepository.findByNameIgnoreCase(measurementTypeRequest.getName().trim()).isPresent()
             && !measurementTypeRequest.getName().equals(measurementType.getName())){
             throw new MeasurementTypeExistsException(measurementTypeRequest.getName());
         }

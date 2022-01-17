@@ -37,7 +37,7 @@ public class ProductService {
     private final ProductTypeRepository productTypeRepository;
     private final MeasurementTypeRepository measurementTypeRepository;
     @Transactional
-    public void create(ProductDto productRequest){
+    public ProductDto create(ProductDto productRequest){
         // Validate the code.
         if(productRepository.findByCodeIgnoreCase(productRequest.getCode()).isPresent()){
             throw new ProductExistsException(productRequest.getCode());
@@ -59,8 +59,9 @@ public class ProductService {
         product.setMeasurementType(measurementType);
         product.setProductStatus(ProductStatus.ACTIVE);
         validatePriceAndQuantity(product);
-        // Store it.
-        productRepository.save(product);
+        // Store it and return it.
+        product = productRepository.save(product);
+        return productMapper.mapToDto(product);
     }
     @Transactional
     public void update(ProductDto productRequest){

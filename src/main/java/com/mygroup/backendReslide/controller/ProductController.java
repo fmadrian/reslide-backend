@@ -33,8 +33,7 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<GenericResponse> create(@RequestBody ProductDto productRequest){
         try{
-            productService.create(productRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(productService.create(productRequest), HttpStatus.CREATED);
         }catch (ProductExistsException | ProductBrandNotFoundException | ProductTypeNotFoundException
                 | PriceNotValidException | QuantityNotValidException | MeasurementTypeNotFoundException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);

@@ -49,11 +49,11 @@ public class ProductBrandService {
         productBrandRepository.save(productBrand);
     }
     @Transactional
-    public void deactivate(ProductBrandDto productBrandDto) {
+    public void switchStatus(ProductBrandDto productBrandDto) {
         // Deactivates it and stores the changes.
         ProductBrand productBrand = productBrandRepository.findById(productBrandDto.getId())
                 .orElseThrow(() -> new ProductBrandNotFoundException(productBrandDto.getId()));
-        productBrand.setEnabled(false);
+        productBrand.setEnabled(!productBrand.isEnabled());
         productBrandRepository.save(productBrand);
     }
     @Transactional(readOnly = true)

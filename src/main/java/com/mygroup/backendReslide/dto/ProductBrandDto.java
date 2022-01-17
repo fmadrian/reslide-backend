@@ -11,4 +11,5 @@ public class ProductBrandDto {
     private Long id;
     private String name;
     private String notes;
+    private boolean enabled;
 }

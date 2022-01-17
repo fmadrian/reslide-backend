@@ -46,10 +46,10 @@ public class ProductBrandController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping("/deactivate")
-    public ResponseEntity<GenericResponse> deactivate(@RequestBody ProductBrandDto productBrandDto){
+    @PutMapping("/switchStatus")
+    public ResponseEntity<GenericResponse> switchStatus(@RequestBody ProductBrandDto productBrandDto){
         try{
-            productBrandService.deactivate(productBrandDto);
+            productBrandService.switchStatus(productBrandDto);
             return new ResponseEntity(responseService.buildInformation("Deactivated."), HttpStatus.OK);
         } catch (ProductBrandNotFoundException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);

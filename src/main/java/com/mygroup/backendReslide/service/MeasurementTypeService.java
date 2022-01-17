@@ -47,12 +47,12 @@ public class MeasurementTypeService {
         measurementTypeRepository.save(measurementType);
     }
     @Transactional
-    public void deactivate(MeasurementTypeDto measurementTypeRequest){
+    public void switchStatus(MeasurementTypeDto measurementTypeRequest){
         MeasurementType measurementType = measurementTypeRepository.findById(measurementTypeRequest.getId())
                 .orElseThrow(()->new MeasurementTypeNotFoundException(measurementTypeRequest.getId()));
 
         // Do the changes and store them.
-        measurementType.setEnabled(false);
+        measurementType.setEnabled(!measurementType.isEnabled());
 
         measurementTypeRepository.save(measurementType);
     }

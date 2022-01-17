@@ -45,10 +45,10 @@ public class MeasurementTypeController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping("/deactivate")
-    public ResponseEntity<GenericResponse> deactivate(@RequestBody MeasurementTypeDto measurementTypeRequest){
+    @PutMapping("/switchStatus")
+    public ResponseEntity<GenericResponse> switchStatus(@RequestBody MeasurementTypeDto measurementTypeRequest){
         try {
-            measurementTypeService.deactivate(measurementTypeRequest);
+            measurementTypeService.switchStatus(measurementTypeRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Deactivated."), HttpStatus.OK);
         } catch (MeasurementTypeNotFoundException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);

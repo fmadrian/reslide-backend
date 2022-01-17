@@ -11,4 +11,5 @@ public class MeasurementTypeDto {
     private Long id;
     private String name;
     private String notes;
+    private boolean enabled;
 }

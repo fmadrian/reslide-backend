@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.dto.response.AuthenticationResponse;
 import com.mygroup.backendReslide.dto.response.GenericResponse;
 import com.mygroup.backendReslide.exceptions.InternalError;
 import com.mygroup.backendReslide.exceptions.InvalidRefreshTokenException;
+import com.mygroup.backendReslide.exceptions.UserNotAuthorizedException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
@@ -36,7 +37,7 @@ public class AuthController {
         try {
             authService.createUser(userRequest);
             return new ResponseEntity(responseService.buildInformation("User created successfully."), HttpStatus.OK);
-        }catch (UsernameExistsException | IndividualCodeExistsException | IndividualTypeNotFoundException e){
+        }catch (UsernameExistsException | UserNotAuthorizedException | IndividualCodeExistsException | IndividualTypeNotFoundException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             System.out.println(e);
@@ -48,7 +49,7 @@ public class AuthController {
         try {
             authService.updateUser(userRequest);
             return new ResponseEntity(responseService.buildInformation("Updated."), HttpStatus.OK);
-        }catch (UsernameNotFoundException | UsernameExistsException | IndividualCodeExistsException e){
+        }catch (UsernameNotFoundException  | UserNotAuthorizedException | UsernameExistsException | IndividualCodeExistsException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }catch (Exception e){
             System.out.println(e);

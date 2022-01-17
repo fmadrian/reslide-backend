@@ -6,6 +6,7 @@ import com.mygroup.backendReslide.dto.request.RefreshTokenRequest;
 import com.mygroup.backendReslide.dto.request.UserRequest;
 import com.mygroup.backendReslide.dto.response.AuthenticationResponse;
 import com.mygroup.backendReslide.dto.response.UserResponse;
+import com.mygroup.backendReslide.exceptions.UserNotAuthorizedException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
@@ -45,6 +46,11 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     @Transactional
     public void createUser(UserRequest userRequest){
+        // Only administrators can do this operation.
+        if(!this.getCurrentUser().getRole().equals(UserRole.ADMIN)){
+            throw new UserNotAuthorizedException(this.getCurrentUser().getUsername());
+        }
+
         // Verify that username / code doesn't exist in the database.
         if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()){
             throw new UsernameExistsException(userRequest.getUsername());

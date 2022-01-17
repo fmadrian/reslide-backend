@@ -83,16 +83,13 @@ public class IndividualTypeService {
     }
     @Transactional(readOnly = true)
     private void isUserAuthorized(){
+        // Roles authorized
         ArrayList<UserRole> authorizedRoles = new ArrayList<UserRole>();
         authorizedRoles.add(UserRole.ADMIN);
 
-        // Search and verify if the user that wants to make a change is authorized
-        String username = this.authService.getCurrentUser().getUsername();
-        User user = this.userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(()-> new UserNotFoundException(username));
         // If the role that the user has is not authorized, throws an exception.
-        if (!authorizedRoles.contains(user.getRole())){
-            throw new UserNotAuthorizedException(username);
+        if (!authorizedRoles.contains(this.authService.getCurrentUser().getRole())){
+            throw new UserNotAuthorizedException(this.authService.getCurrentUser().getUsername());
         }
     }
 

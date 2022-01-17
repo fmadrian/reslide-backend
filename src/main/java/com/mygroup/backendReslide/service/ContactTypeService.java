@@ -20,12 +20,14 @@ public class ContactTypeService {
     private final ContactTypeRepository contactTypeRepository;
 
     @Transactional
-    public void create(ContactTypeDto contactTypeRequest) {
+    public ContactTypeDto create(ContactTypeDto contactTypeRequest) {
         if(contactTypeRepository.findByTypeIgnoreCase(contactTypeRequest.getType()).isPresent()){
             throw new ContactTypeExistsException(contactTypeRequest.getType());
         }
 
-        contactTypeRepository.save(contactTypeMapper.mapToEntity(contactTypeRequest));
+        ContactType contactType = this.contactTypeRepository.save(contactTypeMapper.mapToEntity(contactTypeRequest));
+        return this.contactTypeMapper.mapToDto(contactType);
+
     }
 
     @Transactional
@@ -59,5 +61,20 @@ public class ContactTypeService {
                     .map(contactTypeMapper::mapToDto) // .map((contactType) -> contactTypeMapper.mapToDto(contactType))
                     .collect(Collectors.toList());
         }
+    }
+    @Transactional(readOnly = true)
+    public ContactTypeDto get(Long id) {
+        return contactTypeMapper.mapToDto(
+                contactTypeRepository.findById(id).orElseThrow(()-> new ContactTypeNotFoundException(id))
+        );
+    }
+    @Transactional
+    public void switchStatus(ContactTypeDto contactTypeDto) {
+        // Search it, reverse the status and save it.
+        ContactType contactType = this.contactTypeRepository.findById(contactTypeDto.getId())
+                .orElseThrow(()-> new ContactTypeNotFoundException(contactTypeDto.getId()));
+
+        contactType.setEnabled(!contactType.isEnabled());
+        this.contactTypeRepository.save(contactType);
     }
 }

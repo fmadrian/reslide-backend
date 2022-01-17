@@ -22,10 +22,10 @@ public class ContactTypeController {
     private final ContactTypeService contactTypeService;
     private final GenericResponseService responseService;
     @PostMapping("/create")
-    public ResponseEntity<GenericResponse> create(@RequestBody ContactTypeDto contactTypeRequest){
+    public ResponseEntity create(@RequestBody ContactTypeDto contactTypeRequest){
         try{
-            contactTypeService.create(contactTypeRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+
+            return new ResponseEntity(contactTypeService.create(contactTypeRequest), HttpStatus.CREATED);
         }catch (ContactTypeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -50,6 +50,32 @@ public class ContactTypeController {
         try{
             return new ResponseEntity<List<ContactTypeDto>>(contactTypeService.search(type), HttpStatus.OK);
         }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/get/{id}")
+    public ResponseEntity get(@PathVariable Long id){
+        try{
+            return new ResponseEntity(this.contactTypeService.get(id), HttpStatus.OK);
+        }catch (ContactTypeNotFoundException e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.CONFLICT);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/switchStatus")
+    public ResponseEntity switchStatus(@RequestBody ContactTypeDto contactTypeDto){
+        try{
+            this.contactTypeService.switchStatus(contactTypeDto);
+            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Contact type status changed."), HttpStatus.OK);
+
+        }catch (ContactTypeNotFoundException e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.CONFLICT);
+        }
+        catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }

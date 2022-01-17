@@ -258,8 +258,7 @@ public class PaymentService {
             List<PaymentDto> result = new ArrayList<PaymentDto>();
             result.addAll(orderPayments);
             result.addAll(invoicePayments);
-            result = result.stream().sorted(Comparator.comparing(payment -> Instant.parse(payment.getDate()))).collect(Collectors.toList());
-            return result;
+            return result.stream().sorted(Comparator.comparing(payment -> Instant.parse(payment.getDate()))).collect(Collectors.toList());
         }
         else{
             return null;

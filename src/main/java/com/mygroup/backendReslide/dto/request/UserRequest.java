@@ -15,6 +15,6 @@ public class UserRequest {
     private String password;
     // Person's notes
     private String notes;
-    // Person's name and password
+    // Person's information
     private IndividualDto individual;
 }

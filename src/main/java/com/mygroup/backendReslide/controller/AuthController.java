@@ -12,6 +12,7 @@ import com.mygroup.backendReslide.exceptions.UserNotAuthorizedException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.service.AuthService;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import lombok.AllArgsConstructor;
@@ -31,48 +32,12 @@ public class AuthController {
     private final AuthService authService;
     private final GenericResponseService responseService;
 
-
-    @PostMapping("/create/user")
-    public ResponseEntity createUser(@RequestBody UserRequest userRequest){
-        try {
-            authService.createUser(userRequest);
-            return new ResponseEntity(responseService.buildInformation("User created successfully."), HttpStatus.OK);
-        }catch (UsernameExistsException | UserNotAuthorizedException | IndividualCodeExistsException | IndividualTypeNotFoundException e){
-            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.CONFLICT);
-        }catch (Exception e){
-            System.out.println(e);
-            return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PutMapping("/update/user")
-    public ResponseEntity updateUser(@RequestBody UserRequest userRequest){
-        try {
-            authService.updateUser(userRequest);
-            return new ResponseEntity(responseService.buildInformation("Updated."), HttpStatus.OK);
-        }catch (UsernameNotFoundException  | UserNotAuthorizedException | UsernameExistsException | IndividualCodeExistsException e){
-            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
-        }catch (Exception e){
-            System.out.println(e);
-            return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/get/user")
-    public ResponseEntity getUserInformation(){
-        try{
-            return new ResponseEntity(authService.getUserInformation(), HttpStatus.OK);
-        }catch (UsernameNotFoundException e){
-            return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
-        }catch (Exception e){
-            System.out.println(e);
-            return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest){
         try {
             AuthenticationResponse response = authService.login(loginRequest);
             return new ResponseEntity<AuthenticationResponse>(response, HttpStatus.OK);
-        }catch (BadCredentialsException e){
+        }catch (UserNotFoundException | BadCredentialsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }catch (Exception e){
             e.printStackTrace();

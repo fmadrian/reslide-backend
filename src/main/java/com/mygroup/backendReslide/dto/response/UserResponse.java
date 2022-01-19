@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 public class UserResponse {
     // User's name
     private String username;
+    private String role;
+    private boolean enabled;
     // Person's information.
     private IndividualDto individual;
 }

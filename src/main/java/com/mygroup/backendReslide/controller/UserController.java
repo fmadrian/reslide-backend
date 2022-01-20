@@ -9,6 +9,7 @@ import com.mygroup.backendReslide.exceptions.UserNotAuthorizedException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
 import com.mygroup.backendReslide.exceptions.notFound.IndividualTypeNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.NotAllowedException;
 import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import com.mygroup.backendReslide.service.UserService;
@@ -28,8 +29,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity createUser(@RequestBody UserRequest userRequest){
         try {
-            this.userService.createUser(userRequest);
-            return new ResponseEntity(responseService.buildInformation("User created successfully."), HttpStatus.CREATED);
+            return new ResponseEntity(this.userService.createUser(userRequest), HttpStatus.CREATED);
         }catch(UserNotAuthorizedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
@@ -66,12 +66,12 @@ public class UserController {
             return new ResponseEntity<>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping("/update/{username}")
-    public ResponseEntity updateUser(@PathVariable String username, @RequestBody UpdateUserRequest userRequest){
+    @PutMapping("/update/{id}")
+    public ResponseEntity updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest userRequest){
         try{
-            this.userService.updateUser(username, userRequest);
+            this.userService.updateUser(id, userRequest);
             return new ResponseEntity(this.responseService.buildInformation("Updated"), HttpStatus.OK);
-        }catch(UserNotAuthorizedException e){
+        }catch(UserNotAuthorizedException | NotAllowedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
         catch(UserNotFoundException e){
@@ -81,10 +81,10 @@ public class UserController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/get/{username}")
-    public ResponseEntity getUser(@PathVariable String username){
+    @GetMapping("/get/{id}")
+    public ResponseEntity getUser(@PathVariable Long id){
         try{
-            return new ResponseEntity(this.userService.search(username), HttpStatus.OK);
+            return new ResponseEntity(this.userService.getUser(id), HttpStatus.OK);
         }catch(UserNotAuthorizedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
@@ -111,7 +111,7 @@ public class UserController {
         try{
             this.userService.switchStatus(userRequest);
             return new ResponseEntity(this.responseService.buildInformation("Status changed"), HttpStatus.OK);
-        }catch(UserNotAuthorizedException e){
+        }catch(UserNotAuthorizedException | NotAllowedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
         catch (UsernameNotFoundException e){
@@ -126,7 +126,7 @@ public class UserController {
         try{
             this.userService.switchRole(userRequest);
             return new ResponseEntity(this.responseService.buildInformation("Status changed"), HttpStatus.OK);
-        }catch(UserNotAuthorizedException e){
+        }catch(UserNotAuthorizedException | NotAllowedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }catch (UsernameNotFoundException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.CONFLICT);

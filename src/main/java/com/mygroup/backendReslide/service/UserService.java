@@ -8,6 +8,7 @@ import com.mygroup.backendReslide.exceptions.UserNotAuthorizedException;
 import com.mygroup.backendReslide.exceptions.UserRoleNotFoundException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.IndividualCodeExistsException;
 import com.mygroup.backendReslide.exceptions.alreadyExists.UsernameExistsException;
+import com.mygroup.backendReslide.exceptions.notFound.NotAllowedException;
 import com.mygroup.backendReslide.exceptions.notFound.UserNotFoundException;
 import com.mygroup.backendReslide.mapper.UserMapper;
 import com.mygroup.backendReslide.model.Address;
@@ -46,7 +47,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createUser(UserRequest userRequest){
+    public UserResponse createUser(UserRequest userRequest){
         User currentUser = this.authService.getCurrentUser();
         // Only administrators can do this operation.
         if(!currentUser.getRole().equals(UserRole.ADMIN)){
@@ -54,9 +55,9 @@ public class UserService {
         }
 
         // Verify that username / code doesn't exist in the database.
-        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()){
+        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername().trim()).isPresent()){
             throw new UsernameExistsException(userRequest.getUsername());
-        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode()).isPresent()){
+        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode().trim()).isPresent()){
             throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
         }
         // Create user from mapped object and some changes.
@@ -75,7 +76,8 @@ public class UserService {
         // Save BOTH OBJECTS.
         // WE HAVE TO SAVE BOTH OBJECTS, OTHERWISE THE SECOND OBJECT WON'T BE ABLE TO REFERENCE THE FIRST ONE.
         individualRepository.save(user.getIndividual());
-        userRepository.save(user);
+        user = userRepository.save(user);
+        return this.userMapper.mapToDto(user);
     }
 
     // Updates the user that is logged in.
@@ -92,11 +94,16 @@ public class UserService {
     // Updates any user (gets username from parameter in path). User who does the call has to be authorized
     // Gets the new username from the user request
     @Transactional
-    public void updateUser(String username, UpdateUserRequest userRequest){
+    public void updateUser(Long id, UpdateUserRequest userRequest){
         isUserAuthorized();
         // Searches the user
-        User user = userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(()->new UserNotFoundException(username));
+        User user = userRepository.findById(id)
+                .orElseThrow(()->new UserNotFoundException(id));
+        // Don't allow a user to change it's own data using this.
+        if(this.authService.getCurrentUser().getId().equals(id)){
+            throw new NotAllowedException();
+        }
+        this.isFirstAdminUser(user);
         // Changes the username
         this.changeUserInformation(user,userRequest);
     }
@@ -140,6 +147,7 @@ public class UserService {
         // Searches the user
         User user = userRepository.findByUsernameIgnoreCase(userRequest.getUsername())
                 .orElseThrow(()->new UserNotFoundException(userRequest.getUsername()));
+        this.isFirstAdminUser(user);
         user.setEnabled(!user.isEnabled());
         this.userRepository.save(user);
     }
@@ -149,7 +157,7 @@ public class UserService {
         // Searches the user
         User user = userRepository.findByUsernameIgnoreCase(userRequest.getUsername())
                 .orElseThrow(()->new UserNotFoundException(userRequest.getUsername()));
-
+        this.isFirstAdminUser(user);
         if(user.getRole().equals(UserRole.ADMIN)) {
             user.setRole(UserRole.CASHIER);
         }else{
@@ -161,9 +169,16 @@ public class UserService {
     @Transactional(readOnly = true)
     private void isUserAuthorized(){
         // User must be admin to see other users information.
-        User currentUser =this.authService.getCurrentUser();
+        User currentUser = this.authService.getCurrentUser();
         if(!currentUser.getRole().equals(UserRole.ADMIN)){
             throw new UserNotAuthorizedException(currentUser.getUsername());
+        }
+    }
+    @Transactional(readOnly = true)
+    private void isFirstAdminUser(User user){
+        // Used to prevent changes in the first admin user.
+        if(user.getUsername().equals("admin")){
+            throw new NotAllowedException();
         }
     }
 
@@ -186,11 +201,11 @@ public class UserService {
 
     }
     @Transactional(readOnly = true)
-    public UserResponse getUser(String username) {
+    public UserResponse getUser(Long id) {
         isUserAuthorized();
         return this.userMapper
-                .mapToDto(userRepository.findByUsernameIgnoreCase(username)
-                        .orElseThrow(()->new UserNotFoundException(username)));
+                .mapToDto(userRepository.findById(id)
+                        .orElseThrow(()->new UserNotFoundException(id)));
     }
 
 }

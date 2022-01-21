@@ -59,7 +59,8 @@ public class UserController {
         }catch(UserNotAuthorizedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
-        catch (IncorrectCurrentPasswordException | UsernameNotFoundException | UsernameExistsException | IndividualCodeExistsException e){
+        catch (IncorrectCurrentPasswordException | UsernameNotFoundException
+                | UsernameExistsException | IndividualCodeExistsException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
             e.printStackTrace();
@@ -71,7 +72,8 @@ public class UserController {
         try{
             this.userService.updateUser(id, userRequest);
             return new ResponseEntity(this.responseService.buildInformation("Updated"), HttpStatus.OK);
-        }catch(UserNotAuthorizedException | NotAllowedException e){
+        }catch(UserNotAuthorizedException | NotAllowedException | UsernameNotFoundException
+                | UsernameExistsException | IndividualCodeExistsException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }
         catch(UserNotFoundException e){

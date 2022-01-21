@@ -6,6 +6,7 @@ import com.mygroup.backendReslide.exceptions.InvoiceAndDetailDoNotMatchException
 import com.mygroup.backendReslide.exceptions.ProductQuantityException;
 import com.mygroup.backendReslide.exceptions.notFound.InvoiceDetailNotFoundException;
 import com.mygroup.backendReslide.exceptions.notFound.InvoiceNotFoundException;
+import com.mygroup.backendReslide.exceptions.notFound.ProductNotFoundException;
 import com.mygroup.backendReslide.model.Product;
 import com.mygroup.backendReslide.service.GenericResponseService;
 import com.mygroup.backendReslide.service.InvoiceDetailService;
@@ -26,7 +27,7 @@ public class InvoiceDetailController {
     public ResponseEntity validate(@RequestBody InvoiceDetailRequest invoiceDetailRequest){
         try{
             return new ResponseEntity(invoiceDetailService.validatesRequest(invoiceDetailRequest), HttpStatus.OK);
-        }catch (ProductQuantityException e){
+        }catch (ProductQuantityException | ProductNotFoundException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);
         }
         catch (Exception e){

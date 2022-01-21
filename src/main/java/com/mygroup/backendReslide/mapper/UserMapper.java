@@ -18,6 +18,7 @@ public abstract class UserMapper{
     public abstract User mapToEntity (UserRequest userRequest);
 
     @Mapping(target = "individual", expression = "java(mapIndividualToDto(user.getIndividual()))")
+    @Mapping(target = "role", expression = "java(user.getRole().toString())")
     public abstract UserResponse mapToDto(User user);
 
     IndividualDto mapIndividualToDto(Individual individual){

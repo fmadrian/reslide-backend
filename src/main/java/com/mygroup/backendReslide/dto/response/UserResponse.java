@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
+    private Long id;
     // User's name
     private String username;
+    private String role;
+    private boolean enabled;
     // Person's information.
     private IndividualDto individual;
 }

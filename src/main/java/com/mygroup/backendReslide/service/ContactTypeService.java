@@ -42,7 +42,7 @@ public class ContactTypeService {
         contactType.setType(contactTypeRequest.getType());
         contactType.setNotes(contactTypeRequest.getNotes());
         contactType.setEnabled(contactTypeRequest.isEnabled());
-        contactTypeRepository.save(contactTypeMapper.mapToEntity(contactTypeRequest));
+        contactTypeRepository.save(contactType);
     }
 
     @Transactional(readOnly = true)

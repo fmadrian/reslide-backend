@@ -11,4 +11,5 @@ public class ProductTypeDto {
     private Long id;
     private String type;
     private String notes;
+    private boolean enabled;
 }

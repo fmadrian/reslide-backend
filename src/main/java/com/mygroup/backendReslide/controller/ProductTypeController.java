@@ -21,10 +21,9 @@ public class ProductTypeController {
     private final GenericResponseService responseService;
 
     @PostMapping("/create")
-    public ResponseEntity<GenericResponse> create(@RequestBody ProductTypeDto productTypeRequest){
+    public ResponseEntity create(@RequestBody ProductTypeDto productTypeRequest){
         try{
-            productTypeService.create(productTypeRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Product type registered."), HttpStatus.CREATED);
+            return new ResponseEntity(productTypeService.create(productTypeRequest), HttpStatus.CREATED);
         }catch (ProductTypeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){
@@ -42,10 +41,10 @@ public class ProductTypeController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping("/deactivate")
-    public ResponseEntity<GenericResponse> deactivate(@RequestBody ProductTypeDto productTypeRequest){
+    @PutMapping("/switchStatus")
+    public ResponseEntity<GenericResponse> switchStatus(@RequestBody ProductTypeDto productTypeRequest){
         try {
-            productTypeService.deactivate(productTypeRequest);
+            productTypeService.switchStatus(productTypeRequest);
             return new ResponseEntity<GenericResponse>(responseService.buildInformation("Product type deactivated."), HttpStatus.OK);
         } catch (ProductTypeNotFoundException | ProductTypeExistsException e) {
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
@@ -64,7 +63,16 @@ public class ProductTypeController {
             return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    @GetMapping("/get/{id}")
+    public ResponseEntity get(@PathVariable Long id){
+        try{
+            return new ResponseEntity(productTypeService.get(id), HttpStatus.OK);
+        }catch (ProductTypeNotFoundException e) {
+            return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<GenericResponse>(responseService.buildError(new InternalError(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @DeleteMapping("/delete")
     public ResponseEntity delete(@RequestBody ProductTypeDto productTypeRequest){
         try{

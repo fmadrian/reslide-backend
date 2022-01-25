@@ -20,7 +20,7 @@ public class ProductTypeService {
     private final ProductTypeRepository productTypeRepository;
     private final ProductTypeMapper productTypeMapper;
     @Transactional
-    public void create(ProductTypeDto productTypeRequest){
+    public ProductTypeDto create(ProductTypeDto productTypeRequest){
         // Check whether the product type exists.
         if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()){
             throw new ProductTypeExistsException(productTypeRequest.getType());
@@ -32,7 +32,8 @@ public class ProductTypeService {
         productType.setNotes(productTypeRequest.getNotes());
         productType.setEnabled(true);*/
         // Store in the database.
-        productTypeRepository.save(productType);
+        productType = productTypeRepository.save(productType);
+        return this.productTypeMapper.mapToDto(productType);
     }
     @Transactional
     public void update(ProductTypeDto productTypeRequest){
@@ -40,7 +41,8 @@ public class ProductTypeService {
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
                 .orElseThrow(()->new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Check that the new product type doesn't exist.
-        if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()){
+        if (productTypeRepository.findByTypeIgnoreCase(productTypeRequest.getType()).isPresent()
+        && !productTypeRequest.getType().equals(productType.getType())){
             throw new ProductTypeExistsException(productTypeRequest.getType());
         }
         // Do the changes.
@@ -50,12 +52,12 @@ public class ProductTypeService {
         productTypeRepository.save(productType);
     }
     @Transactional
-    public void deactivate(ProductTypeDto productTypeRequest){
+    public void switchStatus(ProductTypeDto productTypeRequest){
         // Search the product type.
         ProductType productType = productTypeRepository.findById(productTypeRequest.getId())
                 .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
         // Do the changes.
-        productType.setEnabled(false);
+        productType.setEnabled(!productType.isEnabled());
         // Update the database.
         productTypeRepository.save(productType);
     }
@@ -82,5 +84,12 @@ public class ProductTypeService {
                 .orElseThrow(()-> new ProductTypeNotFoundException(productTypeRequest.getId()));
 
         productTypeRepository.delete(productType);
+    }
+    @Transactional(readOnly = true)
+    public ProductTypeDto get(Long id){
+        return this.productTypeMapper.mapToDto(
+                this.productTypeRepository.findById(id)
+                .orElseThrow(()-> new ProductTypeNotFoundException(id))
+        );
     }
 }

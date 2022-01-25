@@ -22,6 +22,5 @@ public class ProductType {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(nullable = false)
     private String notes;
 }

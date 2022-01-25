@@ -36,6 +36,5 @@ public class Individual { // Class name Entity was not convenient
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(nullable = false)
     private String notes;
 }

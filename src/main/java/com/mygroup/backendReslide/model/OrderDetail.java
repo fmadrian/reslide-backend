@@ -29,6 +29,5 @@ public class OrderDetail {
     @Column(nullable = false)
     private OrderDetailStatus status;
 
-    @Column(nullable = false)
     private String notes;
 }

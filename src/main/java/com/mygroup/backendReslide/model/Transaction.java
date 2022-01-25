@@ -25,7 +25,6 @@ public class Transaction {
 
     private Instant date;
 
-    @Column(nullable = false)
     private String notes;
 
     @OneToMany(fetch = FetchType.LAZY)

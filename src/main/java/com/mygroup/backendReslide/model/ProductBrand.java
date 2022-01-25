@@ -22,6 +22,5 @@ public class ProductBrand {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(nullable = false)
     private String notes;
 }

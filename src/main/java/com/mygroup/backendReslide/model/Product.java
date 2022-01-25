@@ -44,7 +44,6 @@ public class Product {
     @Column(nullable = false)
     private ProductStatus productStatus;
 
-    @Column(nullable = false)
     private String notes;
 
     private Boolean taxExempt; // Product exempt from taxes.

@@ -20,7 +20,6 @@ public class MeasurementType {
     private String name;
 
     private boolean enabled;
-
-    @Column(nullable = false)
+    
     private String notes;
 }

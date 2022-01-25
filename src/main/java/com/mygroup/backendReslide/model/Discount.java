@@ -21,6 +21,5 @@ public class Discount {
     @NotBlank(message = "A reason is required.")
     private String reason;
 
-    @Column(nullable = false)
     private String notes;
 }

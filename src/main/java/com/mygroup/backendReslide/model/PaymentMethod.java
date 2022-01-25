@@ -18,7 +18,6 @@ public class PaymentMethod {
     @NotBlank(message = "Name can't be empty.")
     private String name;
 
-    @Column(nullable = false)
     private String notes;
 
     @Column(nullable = false)

@@ -65,9 +65,10 @@ public class PaymentController {
         }
     }
     @GetMapping("/search/by-date")
-    public ResponseEntity<GenericResponse> searchPaymentsByDate(@RequestParam String type, @RequestParam String start, @RequestParam String end){
+    public ResponseEntity<GenericResponse> searchPaymentsByDate(@RequestParam String type, @RequestParam String status,
+                                                                @RequestParam String start, @RequestParam String end ){
         try{
-            return new ResponseEntity(paymentService.getPaymentsByDate(type, start, end), HttpStatus.OK);
+            return new ResponseEntity(paymentService.getPaymentsByDate(type,status, start, end), HttpStatus.OK);
         }catch (TransactionDoesNotMatchException| DateTimeParseException | TransactionNotFoundException | PaymentAndTransactionDoNotMatch e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }catch (Exception e){

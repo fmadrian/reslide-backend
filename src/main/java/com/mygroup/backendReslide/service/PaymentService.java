@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -246,16 +247,18 @@ public class PaymentService {
         }
     }
     @Transactional(readOnly = true)
-    public List<PaymentDto> getPaymentsByDate(String type, String startDate, String endDate) {
+    public List<PaymentDto> getPaymentsByDate(String type, String status, String startDate, String endDate) {
+        // Put status as parameter
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(status.toUpperCase(Locale.ROOT));
         if(type.equals("order")){
-            return this.getOrderPaymentsByDate(startDate, endDate);
+            return this.getOrderPaymentsByDate(startDate, endDate, paymentStatus);
         }else if(type.equals("invoice")){
-            return this.getInvoicePaymentsByDate(startDate, endDate);
+            return this.getInvoicePaymentsByDate(startDate, endDate, paymentStatus);
         }else if(type.equals("all")){
             // Call both get invoice methods, join the lists and sort them by date.;
-            List<PaymentDto> orderPayments = this.getOrderPaymentsByDate(startDate, endDate);
-            List<PaymentDto> invoicePayments = this.getInvoicePaymentsByDate(startDate, endDate);
-            List<PaymentDto> result = new ArrayList<PaymentDto>();
+            List<PaymentDto> orderPayments = this.getOrderPaymentsByDate(startDate, endDate,paymentStatus);
+            List<PaymentDto> invoicePayments = this.getInvoicePaymentsByDate(startDate, endDate,paymentStatus);
+            List<PaymentDto> result = new ArrayList<>();
             result.addAll(orderPayments);
             result.addAll(invoicePayments);
             return result.stream().sorted(Comparator.comparing(payment -> Instant.parse(payment.getDate()))).collect(Collectors.toList());
@@ -266,13 +269,13 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    private List<PaymentDto> getOrderPaymentsByDate(String startDate, String endDate) {
+    private List<PaymentDto> getOrderPaymentsByDate(String startDate, String endDate, PaymentStatus status) {
         // 1. Search the payments made in between the dates.
         // 2. Map them to DTO's (to send them back to the client).
         // 3. Search which payments belong to orders (link a payment with an order)
         // 4. Add the order id to the respective payment dto and return it.
         // 5. Make it a list and return it.
-        List<PaymentDto> results = paymentRepository.findByDateBetween(Instant.parse(startDate), Instant.parse(endDate))
+        List<PaymentDto> results = paymentRepository.findByDateBetweenAndStatus(Instant.parse(startDate), Instant.parse(endDate),status)
                                 .stream()
                                 .map(paymentMapper::mapToDto)
                                 .map(paymentDto -> {
@@ -288,13 +291,13 @@ public class PaymentService {
         return results;
     }
     @Transactional(readOnly = true)
-    private List<PaymentDto> getInvoicePaymentsByDate(String startDate, String endDate) {
+    private List<PaymentDto> getInvoicePaymentsByDate(String startDate, String endDate,PaymentStatus status) {
         // 1. Search the payments made in between the dates.
         // 2. Map them to DTO's (to send them back to the client).
         // 3. Search which payments belong to invoices (link a payment with an order)
         // 4. Add the invoice id to the respective payment dto and return it.
         // 5. Make it a list and return it.
-        List<PaymentDto> results = paymentRepository.findByDateBetween(Instant.parse(startDate), Instant.parse(endDate))
+        List<PaymentDto> results = paymentRepository.findByDateBetweenAndStatus(Instant.parse(startDate), Instant.parse(endDate),status)
                 .stream()
                 .map(paymentMapper::mapToDto)
                 .map(paymentDto -> {

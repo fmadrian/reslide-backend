@@ -37,7 +37,7 @@ public class OrderService {
     private final AuthService authService;
 
     @Transactional
-    public void create(OrderRequest orderRequest) {
+    public OrderResponse create(OrderRequest orderRequest) {
         // Map the order.
         // Set the users.
         Order order = orderMapper.mapToEntity(orderRequest);
@@ -75,7 +75,8 @@ public class OrderService {
         // Save the order details.
         orderDetailRepository.saveAll(details);
         // Save the order.
-        orderRepository.save(order);
+        order = orderRepository.save(order);
+        return this.orderMapper.mapToDto(order);
     }
     // Updates order without updating order details.
     public void update(OrderRequest orderRequest){

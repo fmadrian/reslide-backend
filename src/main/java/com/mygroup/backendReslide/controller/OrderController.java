@@ -26,8 +26,7 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody OrderRequest orderRequest){
         try{
-            orderService.create(orderRequest);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(orderService.create(orderRequest), HttpStatus.CREATED);
         }catch (ProductNotFoundException | ProductQuantityException | DiscountNotValidException
                 | PaymentQuantityException | PaymentExceedsDebtException e){
             return new ResponseEntity(responseService.buildError(e), HttpStatus.CONFLICT);

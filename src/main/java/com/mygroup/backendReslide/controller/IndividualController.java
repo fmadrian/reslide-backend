@@ -21,10 +21,9 @@ public class IndividualController {
     private final GenericResponseService responseService;
     private final IndividualService individualService;
     @PostMapping("/create")
-    public ResponseEntity<GenericResponse> create(@RequestBody IndividualDto individualDto){
+    public ResponseEntity create(@RequestBody IndividualDto individualDto){
         try{
-            individualService.create(individualDto);
-            return new ResponseEntity<GenericResponse>(responseService.buildInformation("Created."), HttpStatus.CREATED);
+            return new ResponseEntity(individualService.create(individualDto), HttpStatus.CREATED);
         }catch(IndividualCodeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }

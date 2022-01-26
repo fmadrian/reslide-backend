@@ -24,7 +24,7 @@ public class IndividualService {
     private final ContactRepository contactRepository;
     private final AddressRepository addressRepository;
 
-    public void create(IndividualDto individualDto) {
+    public IndividualDto create(IndividualDto individualDto) {
         // Check whether the individual exists or not.
         if(individualRepository.findByCodeIgnoreCase(individualDto.getCode()).isPresent()){
             throw new IndividualCodeExistsException(individualDto.getCode());
@@ -40,8 +40,9 @@ public class IndividualService {
             contactRepository.saveAll(contacts);
         if(!addresses.isEmpty())
             addressRepository.saveAll(addresses);
-        // Save the individual.
-        individualRepository.save(individual);
+        // Save the individual and return it.
+        individual = individualRepository.save(individual);
+        return this.individualMapper.mapToDto(individual);
     }
 
     public void update(IndividualDto individualDto) {

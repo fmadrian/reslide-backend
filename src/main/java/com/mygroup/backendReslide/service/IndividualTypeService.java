@@ -37,8 +37,11 @@ public class IndividualTypeService {
                 .collect(Collectors.toList());
     }
     @Transactional
-    public IndividualTypeDto create(IndividualTypeDto individualTypeDto) {
-        this.isUserAuthorized();
+    public IndividualTypeDto create(IndividualTypeDto individualTypeDto, boolean setup) {
+        // If we don't have the admin user. We need to bypass this restriction to create the PERSON type.
+        if(!setup) {
+            this.isUserAuthorized();
+        }
         // Verify that it doesn't exist.
         if (individualTypeRepository.findByNameIgnoreCase(individualTypeDto.getName()).isPresent()) {
             throw new IndividualTypeExistsException(individualTypeDto.getName());

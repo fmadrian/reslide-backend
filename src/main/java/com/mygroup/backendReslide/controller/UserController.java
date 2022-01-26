@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity createUser(@RequestBody UserRequest userRequest){
         try {
-            return new ResponseEntity(this.userService.createUser(userRequest), HttpStatus.CREATED);
+            return new ResponseEntity(this.userService.createUser(userRequest, false), HttpStatus.CREATED);
         }catch(UserNotAuthorizedException e){
             return new ResponseEntity<>(responseService.buildError(e), HttpStatus.UNAUTHORIZED);
         }

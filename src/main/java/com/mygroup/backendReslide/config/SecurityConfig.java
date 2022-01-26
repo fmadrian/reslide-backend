@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().and() // Allows cors preflights requests to get through. Full explanation: https://www.baeldung.com/spring-security-cors-preflight
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**") // Allows access to GET method into the auth API without authentication token (requirement for login)
+                .antMatchers("/api/auth/**",
+                        "/api/installation/**") // Allows access to any method into the auth and install without authentication token (requirement for login)
                 .permitAll()
                 .antMatchers("/v2/api-docs", // Swagger configuration
                         "/configuration/ui",

@@ -47,17 +47,21 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserResponse createUser(UserRequest userRequest){
-        User currentUser = this.authService.getCurrentUser();
-        // Only administrators can do this operation.
-        if(!currentUser.getRole().equals(UserRole.ADMIN)){
-            throw new UserNotAuthorizedException(currentUser.getUsername());
+    public UserResponse createUser(UserRequest userRequest, boolean setup){
+        // This condition is bypassed if the 'admin' user doesn't exist (backend setup process) and we are creating it.
+        if(!setup){
+            User currentUser = this.authService.getCurrentUser();
+            // Only administrators can do this operation.
+            if(!currentUser.getRole().equals(UserRole.ADMIN))
+            {
+                throw new UserNotAuthorizedException(currentUser.getUsername());
+            }
         }
 
         // Verify that username / code doesn't exist in the database.
-        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername().trim()).isPresent()){
+        if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()){
             throw new UsernameExistsException(userRequest.getUsername());
-        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode().trim()).isPresent()){
+        }if(individualRepository.findByCodeIgnoreCase(userRequest.getIndividual().getCode()).isPresent()){
             throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
         }
         // Create user from mapped object and some changes.
@@ -65,6 +69,10 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userRequest.getPassword())); // Encodes password.
         user.setCreated(Instant.now());
         user.setRole(UserRole.CASHIER);
+        // Admin user created during the setup process must have the admin role.
+        if(setup){
+            user.setRole(UserRole.ADMIN);
+        }
         user.setEnabled(true);
         List<Contact> contacts = user.getIndividual().getContacts();
         List<Address> addresses = user.getIndividual().getAddresses();
@@ -89,7 +97,7 @@ public class UserService {
         if(!this.passwordEncoder.matches(userRequest.getCurrentPassword(), user.getPassword())){
             throw new IncorrectCurrentPasswordException();
         }
-        this.changeUserInformation(user,userRequest);
+        this.changeUserInformation(user,userRequest, true);
     }
     // Updates any user (gets username from parameter in path). User who does the call has to be authorized
     // Gets the new username from the user request
@@ -105,12 +113,12 @@ public class UserService {
         }
         this.isFirstAdminUser(user);
         // Changes the username
-        this.changeUserInformation(user,userRequest);
+        this.changeUserInformation(user,userRequest, false);
     }
 
     // Takes a user object and a user request, Makes changes defined in the user object into the existent user.
     @Transactional
-    private void changeUserInformation(User user, UpdateUserRequest userRequest){
+    private void changeUserInformation(User user, UpdateUserRequest userRequest, boolean isCurrentUser){
         User updatedUser = userMapper.mapToEntity(userRequest);
         // Verifies that the updated username / code doesn't exist in the database.
         if(userRepository.findByUsernameIgnoreCase(userRequest.getUsername()).isPresent()
@@ -121,7 +129,9 @@ public class UserService {
             throw new IndividualCodeExistsException(userRequest.getIndividual().getCode());
         }
         // Do the modifications.
-        user.setUsername(updatedUser.getUsername());
+        if(!isCurrentUser) {
+            user.setUsername(updatedUser.getUsername());
+        }
         user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encodes password.
 
         user.getIndividual().setName(updatedUser.getIndividual().getName());

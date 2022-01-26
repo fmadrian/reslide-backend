@@ -25,7 +25,7 @@ public class IndividualTypeController {
     @PostMapping("/create")
     private ResponseEntity<GenericResponse> create(@RequestBody IndividualTypeDto individualTypeDto){
         try{
-            return new ResponseEntity(individualTypeService.create(individualTypeDto), HttpStatus.OK);
+            return new ResponseEntity(individualTypeService.create(individualTypeDto,false), HttpStatus.OK);
         }catch(UserNotAuthorizedException | IndividualTypeExistsException e){
             return new ResponseEntity<GenericResponse>(responseService.buildError(e), HttpStatus.CONFLICT);
         }

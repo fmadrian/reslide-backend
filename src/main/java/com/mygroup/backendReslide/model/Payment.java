@@ -18,7 +18,8 @@ import java.util.Date;
 
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_payment")
+    @SequenceGenerator(name="generator_payment", sequenceName = "sequence_payment")
     private Long id;
 
     @OneToOne
@@ -40,7 +41,7 @@ public class Payment {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "text")
     private String notes;
 
 }

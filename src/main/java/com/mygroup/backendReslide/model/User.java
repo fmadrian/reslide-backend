@@ -16,7 +16,8 @@ import java.time.Instant;
 @Table(name="user_reslide") // User is a reserved keyword in postgresql.
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_user_reslide")
+    @SequenceGenerator(name="generator_user_reslide", sequenceName = "sequence_user_reslide")
     private Long id;
 
     @NotBlank(message = "Username is required")

@@ -12,7 +12,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ProductType {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_product_type")
+    @SequenceGenerator(name="generator_product_type", sequenceName = "sequence_product_type")
     private Long id;
 
     @NotBlank(message = "Type is required")
@@ -22,5 +23,6 @@ public class ProductType {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(columnDefinition = "text")
     private String notes;
 }

@@ -14,7 +14,8 @@ import javax.validation.constraints.NotBlank;
 
 public class Contact {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_contact")
+    @SequenceGenerator(name="generator_contact", sequenceName = "sequence_contact")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,5 +28,6 @@ public class Contact {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(columnDefinition = "text")
     private String notes; // Additional notes about this contact.
 }

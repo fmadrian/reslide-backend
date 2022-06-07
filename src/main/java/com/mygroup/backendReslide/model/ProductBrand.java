@@ -13,7 +13,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ProductBrand {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_product_brand")
+    @SequenceGenerator(name="generator_product_brand", sequenceName = "sequence_product_brand")
     private Long id;
 
     @NotBlank(message = "Name is required")
@@ -22,5 +23,6 @@ public class ProductBrand {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(columnDefinition = "text")
     private String notes;
 }

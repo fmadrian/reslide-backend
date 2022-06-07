@@ -19,7 +19,8 @@ import java.util.List;
 @Table(name="order_reslide") // Order is a reserved keyword in postgresql.
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_order_reslide")
+    @SequenceGenerator(name="generator_order_reslide", sequenceName = "sequence_order_reslide")
     private Long id;
 
     @OneToOne

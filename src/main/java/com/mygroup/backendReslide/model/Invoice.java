@@ -16,7 +16,8 @@ import java.util.List;
 @Entity
 public class Invoice {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_invoice")
+    @SequenceGenerator(name="generator_invoice", sequenceName = "sequence_invoice")
     private Long id;
 
     @OneToOne

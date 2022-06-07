@@ -13,7 +13,8 @@ import java.util.List;
 @Entity
 public class Individual { // Class name Entity was not convenient
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_individual")
+    @SequenceGenerator(name="generator_individual", sequenceName = "sequence_individual")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -36,5 +37,6 @@ public class Individual { // Class name Entity was not convenient
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(columnDefinition = "text")
     private String notes;
 }

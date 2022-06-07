@@ -13,7 +13,8 @@ import javax.validation.constraints.NotBlank;
 @Entity
 public class IndividualType {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_individual_type")
+    @SequenceGenerator(name="generator_individual_type", sequenceName = "sequence_individual_type")
     private Long id;
 
     @NotBlank(message = "Name can't be empty")
@@ -22,5 +23,6 @@ public class IndividualType {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(columnDefinition = "text")
     private String notes;
 }

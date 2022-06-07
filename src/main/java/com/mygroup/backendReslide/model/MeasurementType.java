@@ -13,13 +13,14 @@ import javax.validation.constraints.NotBlank;
 
 public class MeasurementType {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_measurement_type")
+    @SequenceGenerator(name="generator_measurement_type", sequenceName = "sequence_measurement_type")
     private Long id;
 
     @NotBlank(message = "Name is required")
     private String name;
 
     private boolean enabled;
-    
+    @Column(columnDefinition = "text")
     private String notes;
 }

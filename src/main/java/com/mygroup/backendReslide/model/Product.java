@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_product")
+    @SequenceGenerator(name="generator_product", sequenceName = "sequence_product")
     private Long id;
 
     @JoinColumn(name = "brandId", referencedColumnName = "id")
@@ -44,6 +45,7 @@ public class Product {
     @Column(nullable = false)
     private ProductStatus productStatus;
 
+    @Column(columnDefinition = "text")
     private String notes;
 
     private Boolean taxExempt; // Product exempt from taxes.

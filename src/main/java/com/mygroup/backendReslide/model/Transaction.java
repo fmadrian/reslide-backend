@@ -16,7 +16,8 @@ import java.util.List;
 @Entity
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_transaction")
+    @SequenceGenerator(name="generator_transaction", sequenceName = "sequence_transaction")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -25,6 +26,7 @@ public class Transaction {
 
     private Instant date;
 
+    @Column(columnDefinition = "text")
     private String notes;
 
     @OneToMany(fetch = FetchType.LAZY)

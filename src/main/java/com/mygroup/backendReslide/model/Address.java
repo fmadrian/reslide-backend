@@ -14,7 +14,8 @@ import javax.validation.constraints.NotBlank;
 
 public class Address {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_address")
+    @SequenceGenerator(name="generator_address", sequenceName = "sequence_address")
     private Long id;
 
     @Column(nullable = false)

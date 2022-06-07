@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 @Entity
 public class OrderDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_order_detail")
+    @SequenceGenerator(name="generator_order_detail", sequenceName = "sequence_order_detail")
     private Long id;
 
     @OneToOne
@@ -28,6 +29,6 @@ public class OrderDetail {
 
     @Column(nullable = false)
     private OrderDetailStatus status;
-
+    @Column(columnDefinition = "text")
     private String notes;
 }

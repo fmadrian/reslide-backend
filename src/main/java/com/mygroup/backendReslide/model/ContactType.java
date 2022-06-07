@@ -14,7 +14,8 @@ import javax.validation.constraints.NotBlank;
 
 public class ContactType {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_contact_type")
+    @SequenceGenerator(name="generator_contact_type", sequenceName = "sequence_contact_type")
     private Long id;
 
     @NotBlank(message = "Type can't be empty.")
@@ -22,6 +23,6 @@ public class ContactType {
 
     @Column(nullable = false)
     private boolean enabled;
-
+    @Column(columnDefinition = "text")
     private String notes;
 }

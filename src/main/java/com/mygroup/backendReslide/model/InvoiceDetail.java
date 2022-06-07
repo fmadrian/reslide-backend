@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 @Entity
 public class InvoiceDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_invoice_detail")
+    @SequenceGenerator(name="generator_invoice_detail", sequenceName = "sequence_invoice_detail")
     private Long id;
 
     @OneToOne
@@ -36,6 +37,7 @@ public class InvoiceDetail {
     @Column(nullable = false)
     private InvoiceDetailStatus status;
 
+    @Column(columnDefinition = "text")
     private String notes;
 
     private BigDecimal taxPercentage; // Product exempt from taxes at the time of the transaction will have 0.

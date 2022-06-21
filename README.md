@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains the application's backend files necessary to install the database and deploy the backend.
+This repository contains the instructions to install the database and deploy the application's backend.
 
 [Project description](https://github.com/fsv2860/reslide)
 

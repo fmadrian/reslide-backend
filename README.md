@@ -8,8 +8,6 @@ This repository contains the instructions to install the database and deploy the
 
 [Frontend repository](https://www.github.com/fsv2860/reslide-frontend)
 
-[App demo](https://reslide-demo.herokuapp.com/)
-
 ## Installation
 
 ### General requirements
